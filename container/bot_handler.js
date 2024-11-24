@@ -62,7 +62,7 @@ const bot_handler = {
         })
         this.bot.on("message", async (msg) => {
             const { id } = msg.from
-            const chatId = e.chat.id
+            const chatId = msg.chat.id
 
             const session = this.session_steps[id]
             if (!session) {
