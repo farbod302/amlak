@@ -28,7 +28,7 @@ const bot_handler = {
         });
         this.bot.on("callback_query", (e) => {
             console.log(e);
-            const chatId = e.chat.id
+            const chatId = e.message.chat.id
             const { data } = e;
             switch (data) {
                 case ("search"): {
