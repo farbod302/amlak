@@ -1,12 +1,12 @@
 const messages = require("./messages");
-
+const User = require("../db/users")
 const bot_handler = {
     bot: null,
     init(bot) {
         this.bot = bot
         this.add_listeners()
     },
-
+    session_steps: {},
     send_message(chatId, message_id) {
         const msg = messages[message_id]
         if (!msg) return
@@ -14,12 +14,15 @@ const bot_handler = {
     },
     add_listeners() {
         this.bot.onText(/\/start/, (msg) => {
+            console.log({ msg });
             const chatId = msg.chat.id;
+            this.session_steps[chatId] = null
             const options = {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
-                        [{ text: 'جست و جو ملک', callback_data: 'search' }]
+                        [{ text: 'جست و جو ملک', callback_data: 'search' }],
+                        [{ text: 'مالی', callback_data: 'payment' }],
                     ]
                 }
             };
@@ -32,7 +35,8 @@ const bot_handler = {
             this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })
             switch (data) {
                 case ("search"): {
-                    this.send_message(chatId,"get_phone")
+                    this.send_message(chatId, "get_phone")
+                    break
                 }
             }
         })
