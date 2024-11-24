@@ -5,6 +5,7 @@ const bot_handler = {
         this.add_listeners()
     },
     add_listeners() {
+        console.log("add listener");
         this.bot.onText(/\/start/, (msg) => {
             const chatId = msg.chat.id;
 
