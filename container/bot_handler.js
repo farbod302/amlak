@@ -60,7 +60,9 @@ const bot_handler = {
             }
         })
         this.bot.on("message", (msg) => {
-            console.log({msg});
+            const { id } = msg.from
+            const session=this.session_steps[id]
+            console.log({session});
         })
     }
 
