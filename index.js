@@ -10,21 +10,22 @@ const conf = {
     cert: fs.readFileSync("/etc/letsencrypt/live/netfan.org/fullchain.pem")
 }
 const server = https.createServer(conf, app);
+
 const port = process.env.PORT
 
 server.listen(port, () => { console.log("Server run on port " + port); })
+// app.listen(port, () => { console.log("Server run on port " + port); })
 
 app.use(bodyParser.json({ extend: true }))
 const mongo = require("mongoose")
 mongo.connect(process.env.DB)
 
 
-app.get("*", (req, res) => {
-    console.log(req.params);
-    res.json(true)
-})
+const TelegramBot = require('node-telegram-bot-api');
+const bot_handler = require("./container/bot_handler")
 
-app.post("*", (req, res) => {
-    console.log(req.body);
-    res.json(true)
-})
+// Replace with your bot token
+const token = process.env.BOT_TOKEN;
+console.log(token);
+const bot = new TelegramBot(token, { polling: true });
+bot_handler.init(bot)
