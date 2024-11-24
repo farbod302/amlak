@@ -20,11 +20,11 @@ mongo.connect(process.env.DB)
 
 
 app.get("*", (req, res) => {
-    console.log(req);
+    console.log(req.params);
     res.json(true)
 })
 
 app.post("*", (req, res) => {
-    console.log(req);
+    console.log(req.body);
     res.json(true)
 })
