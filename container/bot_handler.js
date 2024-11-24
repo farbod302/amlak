@@ -33,7 +33,7 @@ const bot_handler = {
             switch (data) {
                 case ("search"): {
                     // this.answerInlineQuery(chatId,"get_phone")
-                    this.bot.answerInlineQuery(e.id,messages["get_phone"].text)
+                    this.bot.answerCallbackQuery(e.id,messages["get_phone"].text)
                 }
             }
         })
