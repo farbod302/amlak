@@ -12,7 +12,7 @@ const bot_handler = {
             // Define inline buttons
             const options = {
                 reply_markup: {
-                    keyboard: [
+                    inline_keyboard: [
                         [{ text: 'جستجو خانه', callback_data: '/search' }],
                         [{ text: 'ثبت آگهی', callback_data: '2' }]
                         [{ text: "مالی", callback_data: '3' }]
