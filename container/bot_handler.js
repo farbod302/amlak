@@ -23,7 +23,7 @@ const bot_handler = {
                     ]
                 }
             };
-
+            
             this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
         this.bot.on("callback_query", (e) => {
@@ -32,7 +32,8 @@ const bot_handler = {
             const { data } = e;
             switch (data) {
                 case ("search"): {
-                    this.sent_message(chatId,"get_phone")
+                    // this.answerInlineQuery(chatId,"get_phone")
+                    this.bot.answerInlineQuery(e.id,messages["get_phone"].text)
                 }
             }
         })
