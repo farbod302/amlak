@@ -31,7 +31,5 @@ const bot = new TelegramBot(token, { polling: true });
 //     certificate: '/etc/letsencrypt/live/netfan.org/cert.pem', // Path to your crt.pem
 //     url:"netfan.org"
 // });
-bot.on("message",(e)=>{
-    console.log(e);
-})
+
 bot_handler.init(bot)
