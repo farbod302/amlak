@@ -26,9 +26,8 @@ const bot_handler = require("./container/bot_handler")
 
 // Replace with your bot token
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramBot(token,{webHook: true});
+const bot = new TelegramBot(token, { webHook: true });
 bot.setWebHook('netfan.org', {
-    certificate: '/etc/letsencrypt/live/netfan.org/fullchain.pem', // Path to your crt.pem
-  });
-console.log({ bot });
+    certificate: '/etc/letsencrypt/live/netfan.org/privkey.pem', // Path to your crt.pem
+});
 bot_handler.init(bot)
