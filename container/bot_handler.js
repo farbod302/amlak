@@ -7,6 +7,7 @@ const bot_handler = {
     add_listeners() {
         this.bot.onText(/\/start/, (msg) => {
             console.log("add listener");
+            console.log({msg});
             const chatId = msg.chat.id;
 
             // Define inline buttons
