@@ -2,6 +2,7 @@ const express = require("express")
 const app = express()
 const bodyParser = require("body-parser")
 const fs=require("fs")
+require("dotenv").config()
 
 const https=require("https")
 const conf = {
@@ -14,7 +15,6 @@ const port = process.env.PORT
 server.listen(port, () => { console.log("Server run on port " + port); })
 
 app.use(bodyParser.json({ extend: true }))
-require("dotenv").config()
 const mongo = require("mongoose")
 mongo.connect(process.env.DB)
 
