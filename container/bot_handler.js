@@ -7,7 +7,7 @@ const bot_handler = {
         this.add_listeners()
     },
 
-    sent_message(chatId, message_id) {
+    send_message(chatId, message_id) {
         const msg = messages[message_id]
         if (!msg) return
         this.bot.sendMessage(chatId, msg.text, msg.options)
@@ -32,7 +32,7 @@ const bot_handler = {
             this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })
             switch (data) {
                 case ("search"): {
-                    this.answerInlineQuery(chatId,"get_phone")
+                    this.send_message(chatId,"get_phone")
                 }
             }
         })
