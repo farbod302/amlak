@@ -5,8 +5,8 @@ const fs=require("fs")
 
 const https=require("https")
 const conf = {
-    key: fs.readFileSync("/etc/letsencrypt/live/netfan.orgr/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/netfan.orgr/fullchain.pem")
+    key: fs.readFileSync("/etc/letsencrypt/live/netfan.org/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/netfan.org/fullchain.pem")
 }
 const server = https.createServer(conf, app);
 server.listen(port, () => { console.log("Server run on port " + port); })
