@@ -28,12 +28,13 @@ const bot_handler = {
         });
         this.bot.on("callback_query", (e) => {
             console.log(e);
-            // const { data } = e;
-            // switch (data) {
-            //     case ("search"): {
-            //         this.sent_message()
-            //     }
-            // }
+            const chatId = e.chat.id
+            const { data } = e;
+            switch (data) {
+                case ("search"): {
+                    this.sent_message(chatId,"get_phone")
+                }
+            }
         })
     }
 
