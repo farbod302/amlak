@@ -27,13 +27,12 @@ const bot_handler = {
             this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
         this.bot.on("callback_query", (e) => {
-            console.log(e);
             const chatId = e.message.chat.id
             const { data } = e;
+            this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })
             switch (data) {
                 case ("search"): {
-                    // this.answerInlineQuery(chatId,"get_phone")
-                    this.bot.answerCallbackQuery(e.id, { text: messages["get_phone"].text })
+                    this.answerInlineQuery(chatId,"get_phone")
                 }
             }
         })
