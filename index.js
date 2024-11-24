@@ -26,11 +26,11 @@ const bot_handler = require("./container/bot_handler")
 
 // Replace with your bot token
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramBot(token, { webHook: true });
-bot.setWebHook('netfan.org', {
-    certificate: '/etc/letsencrypt/live/netfan.org/cert.pem', // Path to your crt.pem
-    url:"netfan.org"
-});
+const bot = new TelegramBot(token, { polling: true });
+// bot.setWebHook('netfan.org', {
+//     certificate: '/etc/letsencrypt/live/netfan.org/cert.pem', // Path to your crt.pem
+//     url:"netfan.org"
+// });
 bot.on("message",(e)=>{
     console.log(e);
 })
