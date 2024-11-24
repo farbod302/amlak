@@ -12,15 +12,12 @@ const bot_handler = {
             // Define inline buttons
             const options = {
                 reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'جستجو خانه', callback_data: '/search' }],
-                        [{ text: 'ثبت آگهی', callback_data: '2' }]
-                        [{ text: "مالی", callback_data: '3' }]
-                    ],
-                    resize_keyboard: true, // Adjusts keyboard to fit smaller screens
-                    one_time_keyboard: true // Hides keyboard after use
+                  inline_keyboard: [
+                    [{ text: 'Option 1', callback_data: '1' }],
+                    [{ text: 'Option 2', callback_data: '2' }]
+                  ]
                 }
-            };
+              };
 
             this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
