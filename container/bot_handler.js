@@ -26,8 +26,8 @@ const bot_handler = {
                 }
                 await new User(new_user).save()
             }
-            this.session_steps[chatId] = null
             const chatId = msg.chat.id;
+            this.session_steps[chatId] = null
             const options = {
                 reply_markup: {
                     inline_keyboard: [
