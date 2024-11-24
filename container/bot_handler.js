@@ -6,24 +6,30 @@ const bot_handler = {
     },
     add_listeners() {
         this.bot.onText(/\/start/, (msg) => {
-            console.log("add listener");
-            console.log({msg});
+            console.log({ msg });
             const chatId = msg.chat.id;
 
             // Define inline buttons
             const options = {
                 reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'Option 1', callback_data: '1' }],
-                        [{ text: 'Option 2', callback_data: '2' }]
-                    ]
+                    keyboard: [
+                        [{ text: 'جستجو خانه', callback_data: '/search' }],
+                        [{ text: 'ثبت آگهی', callback_data: '2' }]
+                        [{ text: "مالی", callback_data: '3' }]
+                    ],
+                    resize_keyboard: true, // Adjusts keyboard to fit smaller screens
+                    one_time_keyboard: true // Hides keyboard after use
                 }
             };
 
-            this.bot.sendMessage(chatId, 'Choose an option:', options);
+            this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
+        this.bot.onText(/\/search/, (msg) => {
+            const chatId = msg.chat.id;
+            this.bot.sendMessage(chatId, 'شماره تماس شما در سیستم ثبت نشده.لطفا شماره تماس خود را وارد کنید');
+        })
     }
 
 }
 
-module.exports=bot_handler
+module.exports = bot_handler
