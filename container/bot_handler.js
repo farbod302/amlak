@@ -39,17 +39,28 @@ const bot_handler = {
 
             this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
-        this.bot.on("callback_query", (e) => {
-            console.log(e);
+        this.bot.on("callback_query", async (e) => {
+            const { id } = e.from
             const chatId = e.message.chat.id
             const { data } = e;
             this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })
+            const user = await User.findOne({ telegram_id: id })
+            if (!user) return
+            const { phone } = user
+            if (!phone) {
+                this.send_message(chatId, "get_phone")
+                this.session_steps[chatId] = { cur_step: "phone", nex_step: data }
+                return
+            }
+
             switch (data) {
                 case ("search"): {
-                    this.send_message(chatId, "get_phone")
                     break
                 }
             }
+        })
+        this.bot.on("message", (msg) => {
+            console.log({msg});
         })
     }
 
