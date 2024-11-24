@@ -1,10 +1,10 @@
 const express = require("express")
 const app = express()
 const bodyParser = require("body-parser")
-const fs=require("fs")
+const fs = require("fs")
 require("dotenv").config()
 
-const https=require("https")
+const https = require("https")
 const conf = {
     key: fs.readFileSync("/etc/letsencrypt/live/netfan.org/privkey.pem"),
     cert: fs.readFileSync("/etc/letsencrypt/live/netfan.org/fullchain.pem")
@@ -26,5 +26,6 @@ const bot_handler = require("./container/bot_handler")
 
 // Replace with your bot token
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramBot(token);
+const bot = new TelegramBot(token,{polling: true});
+console.log({ bot });
 bot_handler.init(bot)
