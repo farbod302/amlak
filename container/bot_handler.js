@@ -20,7 +20,7 @@ const bot_handler = {
                 }
             };
 
-            bot.sendMessage(chatId, 'Choose an option:', options);
+            this.bot.sendMessage(chatId, 'Choose an option:', options);
         });
     }
 
