@@ -1,6 +1,7 @@
 const messages = require("./messages");
 const User = require("../db/users");
 const { uid } = require("uid");
+const controllers = require("../controller");
 const bot_handler = {
     bot: null,
     init(bot) {
@@ -25,8 +26,8 @@ const bot_handler = {
                 }
                 await new User(new_user).save()
             }
-            const chatId = msg.chat.id;
             this.session_steps[chatId] = null
+            const chatId = msg.chat.id;
             const options = {
                 reply_markup: {
                     inline_keyboard: [
@@ -59,10 +60,27 @@ const bot_handler = {
                 }
             }
         })
-        this.bot.on("message", (msg) => {
+        this.bot.on("message", async (msg) => {
             const { id } = msg.from
-            const session=this.session_steps[id]
-            console.log({session});
+            const chatId = e.chat.id
+
+            const session = this.session_steps[id]
+            if (!session) {
+                return
+            }
+            const { cur_step, nex_step } = session
+            switch (cur_step) {
+                case ("phone"): {
+                    const is_valid = controllers.phone(msg.text)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_phone")
+                        return
+                    }
+                    await User.findOneAndUpdate({ telegram_id: id }, { $set: { phone: msg.text } })
+                    this.session_steps[id] = null
+                    this.send_message(chatId,"phone_submitted")
+                }
+            }
         })
     }
 
