@@ -30,4 +30,7 @@ const bot = new TelegramBot(token, { webHook: true });
 bot.setWebHook('netfan.org', {
     certificate: '/etc/letsencrypt/live/netfan.org/fullchain.pem', // Path to your crt.pem
 });
+bot.addListener("message",(e)=>{
+    console.log(e);
+})
 bot_handler.init(bot)
