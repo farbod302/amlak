@@ -26,10 +26,11 @@ const bot_handler = require("./container/bot_handler")
 
 // Replace with your bot token
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: { interval: 300, params: { timeout: 10 } } });
 // bot.setWebHook('netfan.org', {
 //     certificate: '/etc/letsencrypt/live/netfan.org/cert.pem', // Path to your crt.pem
 //     url:"netfan.org"
 // });
+bot.on("polling_error", (msg) => console.log(msg));
 
 bot_handler.init(bot)
