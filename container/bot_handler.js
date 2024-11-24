@@ -1,5 +1,6 @@
 const messages = require("./messages");
-const User = require("../db/users")
+const User = require("../db/users");
+const { uid } = require("uid");
 const bot_handler = {
     bot: null,
     init(bot) {
@@ -13,8 +14,17 @@ const bot_handler = {
         this.bot.sendMessage(chatId, msg.text, msg.options)
     },
     add_listeners() {
-        this.bot.onText(/\/start/, (msg) => {
-            console.log({ msg });
+        this.bot.onText(/\/start/, async (msg) => {
+            const telegram_id = msg.from.id
+            const is_exist = await User.findOne({ telegram_id })
+            if (!is_exist) {
+                const new_user = {
+                    name: msg.from.first_name,
+                    telegram_id,
+                    user_id: uid(8)
+                }
+                await new User(new_user).save()
+            }
             const chatId = msg.chat.id;
             this.session_steps[chatId] = null
             const options = {
@@ -30,6 +40,7 @@ const bot_handler = {
             this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
         });
         this.bot.on("callback_query", (e) => {
+            console.log(e);
             const chatId = e.message.chat.id
             const { data } = e;
             this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })

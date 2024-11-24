@@ -6,6 +6,7 @@ const user = mongoose.Schema({
 
     user_id: String,
     telegram_id: String,
+    name:String,
     vip: { type: Boolean, default: false },
     vip_until: { type: Number, default: 0 },
     asset: { type: Number, default: 0 },
