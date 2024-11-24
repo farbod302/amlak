@@ -25,7 +25,7 @@ const bot_handler = {
             const chatId = msg.chat.id;
             this.bot.sendMessage(chatId, 'شماره تماس شما در سیستم ثبت نشده.لطفا شماره تماس خود را وارد کنید');
         })
-        this.bot.on("message",(e)=>{
+        this.bot.on("callback_query",(e)=>{
             console.log(e);
         })
     }
