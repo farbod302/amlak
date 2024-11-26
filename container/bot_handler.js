@@ -103,6 +103,7 @@ const bot_handler = {
                     const cur_session = sessions_handler.get_session(id)
                     const { area } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
+                    console.log({cur_session});
                     break
                 }
                 case ("area"): {
