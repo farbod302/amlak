@@ -144,7 +144,7 @@ const bot_handler = {
                     const new_search = { ...session }
                     console.log({ new_search });
                     await new Search(new_search).save()
-                    const msg = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+                    const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
                     شهر:${new_search.city}
                     مناطق:${new_search.areas.join(", ")}
                     بودجه:\n 
@@ -161,7 +161,7 @@ const bot_handler = {
                             ]
                         }
                     }
-                    this.bot.sendMessage(id, msg,options)
+                    this.bot.sendMessage(id, message,options)
                     break
                 }
 
