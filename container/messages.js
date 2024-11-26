@@ -18,7 +18,48 @@ const messages = {
                 ]
             }
         }
-    }
+    },
+    "select_type": {
+        text: "به دنبال چه ملکی هستید؟",
+        options: {
+            keyboard: [
+                ['1-اجاره', '2-خرید'], 
+                ['3-رهن'] 
+            ],
+            resize_keyboard: true, // Adjust the keyboard size
+            one_time_keyboard: true
+        }
+    },
+    "select_city": {
+        text: "شهر را انتخاب کنید",
+        options: {
+            keyboard: [
+                ['ابهر', 'خرمدره'], 
+            ],
+            resize_keyboard: true, // Adjust the keyboard size
+            one_time_keyboard: true
+        }
+    },
+    "select_area_abhar": {
+        text: "منطقه را انتخاب کنید",
+        options: {
+            keyboard: [
+                ['Abhar 2', 'Abhar 1'], 
+            ],
+            resize_keyboard: true, // Adjust the keyboard size
+            one_time_keyboard: true
+        }
+    },
+    "select_area_khoramdare": {
+        text: "منطقه را انتخاب کنید",
+        options: {
+            keyboard: [
+                ['kh1', 'kh2'], 
+            ],
+            resize_keyboard: true, // Adjust the keyboard size
+            one_time_keyboard: true
+        }
+    },
 
 }
 

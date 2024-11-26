@@ -2,6 +2,7 @@ const messages = require("./messages");
 const User = require("../db/users");
 const { uid } = require("uid");
 const controllers = require("../controller");
+const sessions_handler = require("./sessions_handler");
 const bot_handler = {
     bot: null,
     init(bot) {
@@ -47,15 +48,18 @@ const bot_handler = {
             this.bot.answerCallbackQuery(e.id, { text: "درحال برسی..." })
             const user = await User.findOne({ telegram_id: id })
             if (!user) return
-            const { phone } = user
+            const { phone, user_id } = user
             if (!phone) {
                 this.send_message(chatId, "get_phone")
-                this.session_steps[chatId] = { cur_step: "phone", nex_step: data }
+                this.session_steps[chatId] = { cur_step: "phone" }
                 return
             }
 
             switch (data) {
                 case ("search"): {
+                    sessions_handler.create_session({ user_id, session_type: "search" })
+                    this.send_message(chatId, "select_type")
+                    this.session_steps[id] = { cur_step: "home_type" }
                     break
                 }
             }
@@ -68,7 +72,7 @@ const bot_handler = {
             if (!session) {
                 return
             }
-            const { cur_step, nex_step } = session
+            const { cur_step } = session
             switch (cur_step) {
                 case ("phone"): {
                     const is_valid = controllers.phone(msg.text)
@@ -78,7 +82,21 @@ const bot_handler = {
                     }
                     await User.findOneAndUpdate({ telegram_id: id }, { $set: { phone: msg.text } })
                     this.session_steps[id] = null
-                    this.send_message(chatId,"phone_submitted")
+                    this.send_message(chatId, "phone_submitted")
+                    break
+                }
+                case ("home_type_buy"): {
+                    sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
+                    this.send_message(chatId, "select_city")
+                    this.session_steps[id] = { cur_step: "city" }
+                    break
+                }
+                case ("city"): {
+                    const city = msg.text
+                    sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
+                    this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
+                    this.session_steps[id] = { cur_step: "area" }
+                    break
                 }
             }
         })
