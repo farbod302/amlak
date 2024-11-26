@@ -36,11 +36,14 @@ const messages = {
     "select_city": {
         text: "شهر را انتخاب کنید",
         options: {
-            keyboard: [
-                ['ابهر', 'خرمدره'],
-            ],
-            resize_keyboard: true, // Adjust the keyboard size
-            one_time_keyboard: true
+            reply_markup: {
+
+                keyboard: [
+                    ['ابهر', 'خرمدره'],
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: true
+            }
         }
     },
     "select_area_abhar": {
