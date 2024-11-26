@@ -172,7 +172,7 @@ const bot_handler = {
                         reply_markup: {
                             inline_keyboard: [
                                 [{ text: "جست و جو ملک های مناسب من", callback_data: '#search_' + new_search.session_id }],
-                                [{ text: 'بازگشت به صفحه اصلی', callback_data: 'search' }],
+                                [{ text: 'بازگشت به صفحه اصلی', callback_data: 'home' }],
                             ]
                         }
                     }
