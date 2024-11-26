@@ -49,21 +49,27 @@ const messages = {
     "select_area_abhar": {
         text: "منطقه را انتخاب کنید",
         options: {
-            keyboard: [
-                ['Abhar 2', 'Abhar 1'],
-            ],
-            resize_keyboard: true, // Adjust the keyboard size
-            one_time_keyboard: true
+            reply_markup: {
+
+                keyboard: [
+                    ['Abhar 2', 'Abhar 1'],
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: true
+            }
         }
     },
     "select_area_khoramdare": {
         text: "منطقه را انتخاب کنید",
         options: {
-            keyboard: [
-                ['kh1', 'kh2'],
-            ],
-            resize_keyboard: true, // Adjust the keyboard size
-            one_time_keyboard: true
+            reply_markup: {
+
+                keyboard: [
+                    ['kh1', 'kh2'],
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: true
+            }
         }
     },
 
