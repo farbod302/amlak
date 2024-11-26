@@ -19,7 +19,8 @@ const messages = {
                     [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                     [{ text: 'جست و جو ملک', callback_data: 'search' }],
                     [{ text: 'مالی', callback_data: 'payment' }],
-                ]
+                ],
+                remove_keyboard: true
             }
         }
     },

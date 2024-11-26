@@ -63,6 +63,21 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "home_type" }
                     break
                 }
+                case ("home"): {
+                    this.session_steps[chatId] = null
+                    const options = {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
+                                [{ text: 'جست و جو ملک', callback_data: 'search' }],
+                                [{ text: 'مالی', callback_data: 'payment' }],
+                            ],
+                            remove_keyboard: true
+                        }
+                    };
+                    this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
+                    break
+                }
             }
         })
         this.bot.on("message", async (msg) => {
@@ -128,7 +143,7 @@ const bot_handler = {
                     }
                     sessions_handler.edit_session({ user_id: id, data: { budget_advance: +msg.text } })
                     this.session_steps[id] = { cur_step: "budget_rent" }
-                    this.send_message(id,"budget_rent")
+                    this.send_message(id, "budget_rent")
                     break
                 }
                 case ("budget_rent"): {
@@ -148,10 +163,10 @@ const bot_handler = {
                     شهر:${new_search.city}
                     مناطق:${new_search.areas.join(", ")}
                     بودجه:\n 
-                    ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید \n" : ""}
-                    ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت \n" : ""}
-                    ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه \n" : ""}
-                    ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن \n" : ""}
+                    ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید " : ""}
+                    ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت " : ""}
+                    ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه " : ""}
+                    ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن " : ""}
                     `
                     const options = {
                         reply_markup: {
@@ -161,7 +176,7 @@ const bot_handler = {
                             ]
                         }
                     }
-                    this.bot.sendMessage(id, message,options)
+                    this.bot.sendMessage(id, message, options)
                     break
                 }
 
