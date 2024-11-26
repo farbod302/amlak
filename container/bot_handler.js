@@ -128,6 +128,7 @@ const bot_handler = {
                     }
                     sessions_handler.edit_session({ user_id: id, data: { budget_advance: +msg.text } })
                     this.session_steps[id] = { cur_step: "budget_rent" }
+                    this.send_message(id,"budget_rent")
                     break
                 }
                 case ("budget_rent"): {
