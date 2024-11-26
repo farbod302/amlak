@@ -106,7 +106,9 @@ const bot_handler = {
                     }else{
                         sessions_handler.edit_session({ user_id: id, data: { area: [...cur_session.area,msg.text] } })
                     }
+                    this.bot.sendMessage(chatId,`اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید` )
 
+                    break
                 }
                 case ("ثبت مناطق"): {
                     const cur_session = sessions_handler.get_session(id)
