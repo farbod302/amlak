@@ -99,23 +99,25 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "area" }
                     break
                 }
+                case ("ثبت مناطق"): {
+                    const cur_session = sessions_handler.get_session(id)
+                    const { area } = cur_session
+                    this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
+                    break
+                }
                 case ("area"): {
                     const cur_session = sessions_handler.get_session(id)
                     if (!cur_session.area) {
                         sessions_handler.edit_session({ user_id: id, data: { area: [msg.text] } })
-                    }else{
-                        if(cur_session.area.includes(msg.text))return  this.bot.sendMessage(chatId,`منطقه قبلا انتخاب شده` )
-                        sessions_handler.edit_session({ user_id: id, data: { area: [...cur_session.area,msg.text] } })
+                    } else {
+                        if (cur_session.area.includes(msg.text)) return this.bot.sendMessage(chatId, `منطقه قبلا انتخاب شده`)
+                        sessions_handler.edit_session({ user_id: id, data: { area: [...cur_session.area, msg.text] } })
                     }
-                    this.bot.sendMessage(chatId,`اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید` )
+                    this.bot.sendMessage(chatId, `اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید`)
 
                     break
                 }
-                case ("ثبت مناطق"): {
-                    const cur_session = sessions_handler.get_session(id)
-                    const {area}=cur_session
-                    this.bot.sendMessage(chatId,`منطقه: ${area.join(", ")}` )
-                }
+
             }
         })
     }
