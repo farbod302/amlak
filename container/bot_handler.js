@@ -77,8 +77,8 @@ const bot_handler = {
             switch (msg.text) {
                 case ("ثبت مناطق"): {
                     const cur_session = sessions_handler.get_session(id)
-                    const { area } = cur_session
-                    this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
+                    const { areas } = cur_session
+                    this.bot.sendMessage(chatId, `منطقه: ${areas.join(", ")}`)
                     const { home_type } = cur_session
                     console.log({ home_type });
                     if (home_type == 1) {
