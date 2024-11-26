@@ -79,7 +79,8 @@ const bot_handler = {
                     const { area } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
                     const { home_type } = cur_session
-                    if (home_type == 2) {
+                    console.log({home_type});
+                    if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
                     }
