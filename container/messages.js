@@ -7,6 +7,10 @@ const messages = {
         text: `شماره تماس نامعتبر\nفرمت صحیح: \n 09125432121`,
         options: {}
     },
+    "invalid_price": {
+        text: `قیمت  نامعتبر\nفرمت صحیح: \n 5000000`,
+        options: {}
+    },
     "phone_submitted": {
         text: `شماره تماس شما ثبت شد.اکنون می توانید از خدمات ربات استفاده کنید`,
         options: {
@@ -72,6 +76,14 @@ const messages = {
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
                 one_time_keyboard: false
+            }
+        }
+    },
+    "budget_advance": {
+        text: "بودجه جهت پول پیش را وارد کنید.\nبا اعداد انگلیسی وارد شود",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
             }
         }
     },

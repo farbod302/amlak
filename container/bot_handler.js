@@ -78,6 +78,11 @@ const bot_handler = {
                     const cur_session = sessions_handler.get_session(id)
                     const { area } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
+                    const { home_type } = cur_session
+                    if (home_type == 1) {
+                        this.session_steps[id] = { cur_step: "budget_advance" }
+                        this.send_message(id, "budget_advance")
+                    }
                     return
                 }
                 default: {
@@ -110,6 +115,17 @@ const bot_handler = {
                     sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
                     this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
                     this.session_steps[id] = { cur_step: "area" }
+                    break
+                }
+                case ("budget_advance"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if(!is_valid){
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    sessions_handler.edit_session({ user_id: id, data: { budget_advance: +msg.text } })
+                    this.session_steps[id] = { cur_step: "budget_rent" }
                     break
                 }
 
