@@ -6,7 +6,7 @@ const controllers = {
         return true
     },
     price(num){
-        if(typeof num === "number")return true
+        if(typeof +num === "number")return true
         return false
     }
 }
