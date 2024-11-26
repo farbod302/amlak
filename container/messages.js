@@ -57,7 +57,7 @@ const messages = {
 
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
-                one_time_keyboard: true
+                one_time_keyboard: false
             }
         }
     },
