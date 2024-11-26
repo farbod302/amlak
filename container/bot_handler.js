@@ -57,7 +57,7 @@ const bot_handler = {
 
             switch (data) {
                 case ("search"): {
-                    sessions_handler.create_session({ user_id, session_type: "search" })
+                    sessions_handler.create_session({ user_id: id, session_type: "search" })
                     this.send_message(chatId, "select_type")
                     this.session_steps[id] = { cur_step: "home_type" }
                     break
@@ -86,8 +86,8 @@ const bot_handler = {
                     break
                 }
                 case ("home_type"): {
-                    const res=sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
-                    console.log({res});
+                    const res = sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
+                    console.log({ res });
                     this.send_message(chatId, "select_city")
                     this.session_steps[id] = { cur_step: "city" }
                     break
