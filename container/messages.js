@@ -47,12 +47,14 @@ const messages = {
         }
     },
     "select_area_abhar": {
-        text: "منطقه را انتخاب کنید",
+        text: "مناطق مورد نظر را انتخاب کنید",
         options: {
             reply_markup: {
 
                 keyboard: [
                     ['Abhar 2', 'Abhar 1'],
+                    ["ثبت مناطق"],
+
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
                 one_time_keyboard: true
@@ -60,15 +62,16 @@ const messages = {
         }
     },
     "select_area_khoramdare": {
-        text: "منطقه را انتخاب کنید",
+        text: "مناطق مورد نظر را انتخاب کنید",
         options: {
             reply_markup: {
 
                 keyboard: [
                     ['kh1', 'kh2'],
+                    ["ثبت مناطق"],
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
-                one_time_keyboard: true
+                one_time_keyboard: false
             }
         }
     },

@@ -24,6 +24,12 @@ const sessions_handler = {
         fs.writeFileSync(`${__dirname}/sessions.json`, JSON.stringify(new_json))
         return prv_data
     },
+    get_session(user_id) {
+        const json_str = fs.readFileSync(`${__dirname}/sessions.json`)
+        const json = JSON.parse(json_str.toString())
+        const session = json.find(e => e.user_id === user_id)
+        return session
+    }
 
 }
 
