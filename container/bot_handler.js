@@ -72,6 +72,19 @@ const bot_handler = {
             if (!session) {
                 return
             }
+
+            switch (msg.text) {
+                case ("ثبت مناطق"): {
+                    const cur_session = sessions_handler.get_session(id)
+                    const { area } = cur_session
+                    this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
+                    return
+                }
+                default: {
+                    break
+                }
+            }
+
             const { cur_step } = session
             switch (cur_step) {
                 case ("phone"): {
@@ -99,13 +112,7 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "area" }
                     break
                 }
-                case ("ثبت مناطق"): {
-                    const cur_session = sessions_handler.get_session(id)
-                    const { area } = cur_session
-                    this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
-                    console.log({cur_session});
-                    break
-                }
+
                 case ("area"): {
                     const cur_session = sessions_handler.get_session(id)
                     if (!cur_session.area) {
