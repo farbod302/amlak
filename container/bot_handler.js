@@ -85,7 +85,7 @@ const bot_handler = {
                     this.send_message(chatId, "phone_submitted")
                     break
                 }
-                case ("home_type_buy"): {
+                case ("home_type"): {
                     sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
                     this.send_message(chatId, "select_city")
                     this.session_steps[id] = { cur_step: "city" }
