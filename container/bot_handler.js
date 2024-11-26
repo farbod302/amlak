@@ -1,5 +1,6 @@
 const messages = require("./messages");
 const User = require("../db/users");
+const Search = require("../db/searches");
 const { uid } = require("uid");
 const controllers = require("../controller");
 const sessions_handler = require("./sessions_handler");
@@ -79,7 +80,7 @@ const bot_handler = {
                     const { area } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${area.join(", ")}`)
                     const { home_type } = cur_session
-                    console.log({home_type});
+                    console.log({ home_type });
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
@@ -121,7 +122,7 @@ const bot_handler = {
                 case ("budget_advance"): {
                     const price = msg.text
                     const is_valid = controllers.price(price)
-                    if(!is_valid){
+                    if (!is_valid) {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
@@ -129,14 +130,47 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "budget_rent" }
                     break
                 }
+                case ("budget_rent"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text } })
+                    this.session_steps[id] = null
+                    const session = sessions_handler.get_session(id)
+                    const new_search = { ...session }
+                    console.log({ new_search });
+                    await new Search(new_search).save()
+                    const msg = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+                    شهر:${new_search.city}
+                    مناطق:${new_search.areas.join(", ")}
+                    بودجه:\n 
+                    ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید \n" : ""}
+                    ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت \n" : ""}
+                    ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه \n" : ""}
+                    ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن \n" : ""}
+                    `
+                    const options = {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "جست و جو ملک های مناسب من", callback_data: '#search_' + new_search.session_id }],
+                                [{ text: 'بازگشت به صفحه اصلی', callback_data: 'search' }],
+                            ]
+                        }
+                    }
+                    this.bot.sendMessage(id, msg,options)
+                    break
+                }
 
                 case ("area"): {
                     const cur_session = sessions_handler.get_session(id)
-                    if (!cur_session.area) {
-                        sessions_handler.edit_session({ user_id: id, data: { area: [msg.text] } })
+                    if (!cur_session.areas) {
+                        sessions_handler.edit_session({ user_id: id, data: { areas: [msg.text] } })
                     } else {
-                        if (cur_session.area.includes(msg.text)) return this.bot.sendMessage(chatId, `منطقه قبلا انتخاب شده`)
-                        sessions_handler.edit_session({ user_id: id, data: { area: [...cur_session.area, msg.text] } })
+                        if (cur_session.areas.includes(msg.text)) return this.bot.sendMessage(chatId, `منطقه قبلا انتخاب شده`)
+                        sessions_handler.edit_session({ user_id: id, data: { areas: [...cur_session.areas, msg.text] } })
                     }
                     this.bot.sendMessage(chatId, `اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید`)
 

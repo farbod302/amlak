@@ -80,7 +80,15 @@ const messages = {
         }
     },
     "budget_advance": {
-        text: "بودجه جهت پول پیش را وارد کنید.\nبا اعداد انگلیسی وارد شود",
+        text: "بودجه جهت پول پیش را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "budget_rent": {
+        text: "بودجه جهت اجاره ماهیانه را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
         options: {
             reply_markup: {
                 remove_keyboard: true
