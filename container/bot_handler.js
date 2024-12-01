@@ -184,30 +184,8 @@ const bot_handler = {
                     this.send_message(id, "budget_rent")
                     break
                 }
-                case ("budget_buy"): {
-                    const price = msg.text
-                    const is_valid = controllers.price(price)
-                    if (!is_valid) {
-                        this.send_message(chatId, "invalid_price")
-                        return
-                    }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
-                    this.session_steps[id] = { cur_step: "budget_rent" }
-                    this.send_message(id, "budget_rent")
-                    break
-                }
-                case ("budget_mortgage"): {
-                    const price = msg.text
-                    const is_valid = controllers.price(price)
-                    if (!is_valid) {
-                        this.send_message(chatId, "invalid_price")
-                        return
-                    }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
-                    this.session_steps[id] = { cur_step: "budget_rent" }
-                    this.send_message(id, "budget_rent")
-                    break
-                }
+               
+               
                 case ("budget_rent"): {
                     const price = msg.text
                     const is_valid = controllers.price(price)
