@@ -16,6 +16,30 @@ const bot_handler = {
         if (!msg) return
         this.bot.sendMessage(chatId, msg.text, msg.options)
     },
+    async submit_search(id) {
+        const session = sessions_handler.get_session(id)
+        const new_search = { ...session }
+        console.log({ new_search });
+        await new Search(new_search).save()
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+        شهر:${new_search.city}
+        مناطق:${new_search.areas.join(", ")}
+        بودجه:\n 
+        ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید " : ""}
+        ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت " : ""}
+        ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه " : ""}
+        ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن " : ""}
+        `
+        const options = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "جست و جو ملک های مناسب من", callback_data: '#search_' + new_search.session_id }],
+                    [{ text: 'بازگشت به صفحه اصلی', callback_data: 'home' }],
+                ]
+            }
+        }
+        this.bot.sendMessage(id, message, options)
+    },
     add_listeners() {
         this.bot.onText(/\/start/, async (msg) => {
             const telegram_id = msg.from.id
@@ -63,6 +87,12 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "home_type" }
                     break
                 }
+                case ("submit_new_file"): {
+                    sessions_handler.create_session({ user_id: id, session_type: "submit_new_file" })
+                    this.send_message(chatId, "select_type_submit")
+                    this.session_steps[id] = { cur_step: "home_type" }
+                    break
+                }
                 case ("home"): {
                     this.session_steps[chatId] = null
                     const options = {
@@ -99,6 +129,14 @@ const bot_handler = {
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
+                    }
+                    if (home_type == 2) {
+                        this.session_steps[id] = { cur_step: "budget_buy" }
+                        this.send_message(id, "budget_buy")
+                    }
+                    if (home_type == 3) {
+                        this.session_steps[id] = { cur_step: "budget_mortgage" }
+                        this.send_message(id, "budget_mortgage")
                     }
                     return
                 }
@@ -146,6 +184,30 @@ const bot_handler = {
                     this.send_message(id, "budget_rent")
                     break
                 }
+                case ("budget_buy"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
+                    this.session_steps[id] = { cur_step: "budget_rent" }
+                    this.send_message(id, "budget_rent")
+                    break
+                }
+                case ("budget_mortgage"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
+                    this.session_steps[id] = { cur_step: "budget_rent" }
+                    this.send_message(id, "budget_rent")
+                    break
+                }
                 case ("budget_rent"): {
                     const price = msg.text
                     const is_valid = controllers.price(price)
@@ -155,28 +217,31 @@ const bot_handler = {
                     }
                     sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text } })
                     this.session_steps[id] = null
-                    const session = sessions_handler.get_session(id)
-                    const new_search = { ...session }
-                    console.log({ new_search });
-                    await new Search(new_search).save()
-                    const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
-                    شهر:${new_search.city}
-                    مناطق:${new_search.areas.join(", ")}
-                    بودجه:\n 
-                    ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید " : ""}
-                    ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت " : ""}
-                    ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه " : ""}
-                    ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن " : ""}
-                    `
-                    const options = {
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{ text: "جست و جو ملک های مناسب من", callback_data: '#search_' + new_search.session_id }],
-                                [{ text: 'بازگشت به صفحه اصلی', callback_data: 'home' }],
-                            ]
-                        }
+                    this.submit_search(id)
+                    break
+                }
+                case ("budget_buy"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
                     }
-                    this.bot.sendMessage(id, message, options)
+                    sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
+                    this.session_steps[id] = null
+                    this.submit_search(id)
+                    break
+                }
+                case ("budget_mortgage"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
+                    this.session_steps[id] = null
+                    this.submit_search(id)
                     break
                 }
 

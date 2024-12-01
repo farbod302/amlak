@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 
 const files = mongoose.Schema({
     user_id: String,
-    file_types: Array,
+    file_types: Number,
     Meterage: Number,
     price_sell: { type: Number, default: 0 },
     price_advance: { type: Number, default: 0 },

@@ -38,6 +38,20 @@ const messages = {
             }
         }
     },
+    "select_type": {
+        text: "ثبت آگهی برای:",
+        options: {
+            reply_markup: {
+
+                keyboard: [
+                    ['1-اجاره', '2-خرید'],
+                    ['3-رهن']
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: true
+            }
+        }
+    },
     "select_city": {
         text: "شهر را انتخاب کنید",
         options: {
@@ -81,7 +95,7 @@ const messages = {
         }
     },
     "budget_advance": {
-        text: "بودجه جهت پول پیش را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        text: "بودجه / قیمت جهت پول پیش را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
         options: {
             reply_markup: {
                 remove_keyboard: true
@@ -89,7 +103,23 @@ const messages = {
         }
     },
     "budget_rent": {
-        text: "بودجه جهت اجاره ماهیانه را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        text: "بودجه / قیمت جهت اجاره ماهیانه را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "budget_buy": {
+        text: "بودجه / قیمت جهت خرید را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "budget_mortgage": {
+        text: "بودجه / قیمت جهت رهن را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
         options: {
             reply_markup: {
                 remove_keyboard: true
