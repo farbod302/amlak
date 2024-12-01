@@ -94,7 +94,7 @@ const bot_handler = {
                     break
                 }
                 case ("upload_image"): {
-                    this.session_steps[chatId] = "upload_image"
+                    this.session_steps[chatId] = {cur_step:"upload_image"}
                     this.send_message(chatId, "send_images")
                     break
                 }
