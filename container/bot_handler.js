@@ -276,6 +276,7 @@ const bot_handler = {
                     const last = photo.at(-1)
                     const session = sessions_handler.get_session(id)
                     const { session_id } = session
+                    fs.mkdirSync("./images/" + session_id)
                     this.bot.downloadFile(last.file_id, "./images/" + session_id)
                     const folder=fs.readdirSync( "./images/" + session_id)
                     console.log({folder});
