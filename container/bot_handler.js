@@ -97,7 +97,7 @@ const bot_handler = {
                 case ("upload_image"): {
                     this.session_steps[chatId] = { cur_step: "upload_image" }
                     this.send_message(chatId, "send_images")
-                    const session=sessions_handler.get_session(id)
+                    const session = sessions_handler.get_session(id)
                     fs.mkdirSync("./images/" + session.session_id)
                     break
                 }
@@ -278,10 +278,12 @@ const bot_handler = {
                     const last = photo.at(-1)
                     const session = sessions_handler.get_session(id)
                     const { session_id } = session
-                    
-                    this.bot.downloadFile(last.file_id, "./images/" + session_id)
-                    const folder=fs.readdirSync( "./images/" + session_id)
-                    console.log({folder});
+
+                    await this.bot.downloadFile(last.file_id, "./images/" + session_id)
+                    const folder = fs.readdirSync("./images/" + session_id)
+                    const links = folder.map(e => `https://netfan.org:4949/images/${session_id}/${e}`)
+                    const new_session = sessions_handler.edit_session({ user_id: id, data: { images: links } })
+                    console.log({new_session});
                     break
                 }
 
