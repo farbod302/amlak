@@ -269,6 +269,7 @@ const bot_handler = {
                     break
                 }
                 case ("upload_image"): {
+                    console.log(msg);
                     const { photo } = msg
                     if (!photo) return this.send_message("invalid_photo")
                     const selected_photos_index = photo.length / 2
