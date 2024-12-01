@@ -269,8 +269,8 @@ const bot_handler = {
                     break
                 }
                 case ("upload_image"): {
-                    console.log(msg);
                     const { photo } = msg
+                    console.log({ photo });
                     if (!photo) return this.send_message("invalid_photo")
                     const selected_photos_index = photo.length / 2
                     const images = photo.slice(selected_photos_index)
