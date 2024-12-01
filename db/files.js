@@ -15,9 +15,9 @@ const files = mongoose.Schema({
     state: { type: String, default: "زنجان" },
     city: String,
     area: String,
-    information: String,
+    info: String,
     submitted_at:Number,
-    location:String
+    address:String
 
 })
 

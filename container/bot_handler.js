@@ -93,6 +93,11 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "home_type" }
                     break
                 }
+                case ("upload_image"): {
+                    this.session_steps[chatId] = "upload_image"
+                    this.send_message(chatId, "send_images")
+                    break
+                }
                 case ("home"): {
                     this.session_steps[chatId] = null
                     const options = {
@@ -118,6 +123,7 @@ const bot_handler = {
             if (!session) {
                 return
             }
+
 
             switch (msg.text) {
                 case ("ثبت مناطق"): {
@@ -160,16 +166,23 @@ const bot_handler = {
                 }
                 case ("home_type"): {
                     const res = sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
-                    console.log({ res });
                     this.send_message(chatId, "select_city")
                     this.session_steps[id] = { cur_step: "city" }
                     break
                 }
                 case ("city"): {
                     const city = msg.text
-                    sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
-                    this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
-                    this.session_steps[id] = { cur_step: "area" }
+                    const session = sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
+                    if (session.session_type === "submit_new_file") {
+                        this.session_steps[id] = { cur_step: "single_area" }
+                        this.send_message(chatId, city === "ابهر" ? "select_area_abhar_single" : "select_area_khoramdare_single")
+
+                    } else {
+                        this.session_steps[id] = { cur_step: "area" }
+                        this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
+
+
+                    }
                     break
                 }
                 case ("budget_advance"): {
@@ -184,8 +197,8 @@ const bot_handler = {
                     this.send_message(id, "budget_rent")
                     break
                 }
-               
-               
+
+
                 case ("budget_rent"): {
                     const price = msg.text
                     const is_valid = controllers.price(price)
@@ -233,6 +246,30 @@ const bot_handler = {
                     }
                     this.bot.sendMessage(chatId, `اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید`)
 
+                    break
+                }
+                case ("single_area"): {
+                    sessions_handler.edit_session({ user_id: id, data: { are: msg.text } })
+                    this.session_steps[id] = "address"
+                    this.send_message(chatId, "address")
+
+                    break
+                }
+                case ("address"): {
+                    sessions_handler.edit_session({ user_id: id, data: { address: msg.text } })
+                    this.session_steps[id] = "images_req"
+                    this.send_message(chatId, "images_req")
+
+                    break
+                }
+                case ("info"): {
+                    sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
+                    this.session_steps[id] = "images"
+                    this.send_message(chatId, "image")
+                    break
+                }
+                case ("upload_image"): {
+                    console.log(msg);
                     break
                 }
 

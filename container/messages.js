@@ -38,7 +38,7 @@ const messages = {
             }
         }
     },
-    "select_type": {
+    "select_type_submit": {
         text: "ثبت آگهی برای:",
         options: {
             reply_markup: {
@@ -80,14 +80,27 @@ const messages = {
             }
         }
     },
-    "select_area_khoramdare": {
-        text: "مناطق مورد نظر را انتخاب کنید",
+    "select_area_abhar_single": {
+        text: "منطقه ملک را انتخاب کنید",
+        options: {
+            reply_markup: {
+
+                keyboard: [
+                    ['Abhar 2', 'Abhar 1'],
+
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: false
+            }
+        }
+    },
+    "select_area_khoramdare_single": {
+        text: "منطقه ملک را انتخاب کنید",
         options: {
             reply_markup: {
 
                 keyboard: [
                     ['kh1', 'kh2'],
-                    ["ثبت مناطق"],
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
                 one_time_keyboard: false
@@ -120,6 +133,43 @@ const messages = {
     },
     "budget_mortgage": {
         text: "بودجه / قیمت جهت رهن را وارد کنید (به تومان).\nبا اعداد انگلیسی وارد شود",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "address": {
+        text: "آدرس دقیق ملک را وارد کنید",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "info": {
+        text: "توضیحات  لازم برای این ملک را بنویسید",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
+    "images_req": {
+        text: "آیا مایل به بارگزاری عکس برای این ملک هستید؟",
+        options: {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "بله", callback_data: 'upload_image' }],
+                    [{ text: "خیر", callback_data: 'skip_image' }],
+
+                ],
+                remove_keyboard: true
+            }
+        }
+    },
+    "send_images": {
+        text: "عکس های مورد نظر را انتخاب کرده و ارسال کنید.میتوانید چندین عکس را یک جا ارسال کنید",
         options: {
             reply_markup: {
                 remove_keyboard: true
