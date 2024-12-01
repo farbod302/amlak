@@ -94,7 +94,7 @@ const bot_handler = {
                     break
                 }
                 case ("upload_image"): {
-                    this.session_steps[chatId] = {cur_step:"upload_image"}
+                    this.session_steps[chatId] = { cur_step: "upload_image" }
                     this.send_message(chatId, "send_images")
                     break
                 }
@@ -152,7 +152,7 @@ const bot_handler = {
             }
 
             const { cur_step } = session
-            console.log({cur_step});
+            console.log({ cur_step });
             switch (cur_step) {
                 case ("phone"): {
                     const is_valid = controllers.phone(msg.text)
@@ -251,14 +251,14 @@ const bot_handler = {
                 }
                 case ("single_area"): {
                     sessions_handler.edit_session({ user_id: id, data: { are: msg.text } })
-                    this.session_steps[id] = {cur_step:"address"}
+                    this.session_steps[id] = { cur_step: "address" }
                     this.send_message(chatId, "address")
                     break
                 }
                 case ("address"): {
                     sessions_handler.edit_session({ user_id: id, data: { address: msg.text } })
                     console.log("address resived");
-                    this.session_steps[id] = {cur_step:"images_req"}
+                    this.session_steps[id] = { cur_step: "images_req" }
                     this.send_message(chatId, "images_req")
                     break
                 }
@@ -269,7 +269,13 @@ const bot_handler = {
                     break
                 }
                 case ("upload_image"): {
-                    console.log(msg);
+                    const { photo } = msg
+                    if (!photo) return this.send_message("invalid_photo")
+                    const selected_photos_index = photo.length / 2
+                    const images = photo.slice(selected_photos_index)
+                    const session = sessions_handler.edit_session({ user_id: id, data: { images: images.map(e => e.file_id) } })
+                    console.log(session);
+
                     break
                 }
 

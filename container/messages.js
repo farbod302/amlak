@@ -176,6 +176,14 @@ const messages = {
             }
         }
     },
+    "invalid_photo": {
+        text: "عکس نامعتبر",
+        options: {
+            reply_markup: {
+                remove_keyboard: true
+            }
+        }
+    },
 
 }
 
