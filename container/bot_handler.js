@@ -257,9 +257,9 @@ const bot_handler = {
                 }
                 case ("address"): {
                     sessions_handler.edit_session({ user_id: id, data: { address: msg.text } })
+                    console.log("address resived");
                     this.session_steps[id] = "images_req"
                     this.send_message(chatId, "images_req")
-
                     break
                 }
                 case ("info"): {
