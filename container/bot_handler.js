@@ -4,6 +4,7 @@ const Search = require("../db/searches");
 const { uid } = require("uid");
 const controllers = require("../controller");
 const sessions_handler = require("./sessions_handler");
+const fs = require("fs")
 const bot_handler = {
     bot: null,
     init(bot) {
@@ -271,10 +272,14 @@ const bot_handler = {
                 case ("upload_image"): {
                     console.log(msg);
                     const { photo } = msg
-                    if (!photo) return this.send_message(chatId,"invalid_photo")
-                    const last=photo.at(-1)
-                    this.bot.downloadFile(last.file_id,"./images")
-
+                    if (!photo) return this.send_message(chatId, "invalid_photo")
+                    const last = photo.at(-1)
+                    const session = sessions_handler.get_session(id)
+                    const { session_id } = session
+                    fs.mkdirSync("./images/" + session_id)
+                    this.bot.downloadFile(last.file_id, "./images/" + session_id)
+                    const folder=fs.readdirSync( "./images/" + session_id)
+                    console.log({folder});
                     break
                 }
 
