@@ -152,6 +152,7 @@ const bot_handler = {
             }
 
             const { cur_step } = session
+            console.log({cur_step});
             switch (cur_step) {
                 case ("phone"): {
                     const is_valid = controllers.phone(msg.text)
@@ -250,15 +251,14 @@ const bot_handler = {
                 }
                 case ("single_area"): {
                     sessions_handler.edit_session({ user_id: id, data: { are: msg.text } })
-                    this.session_steps[id] = "address"
+                    this.session_steps[id] = {cur_step:"address"}
                     this.send_message(chatId, "address")
-
                     break
                 }
                 case ("address"): {
                     sessions_handler.edit_session({ user_id: id, data: { address: msg.text } })
                     console.log("address resived");
-                    this.session_steps[id] = "images_req"
+                    this.session_steps[id] = {cur_step:"images_req"}
                     this.send_message(chatId, "images_req")
                     break
                 }
