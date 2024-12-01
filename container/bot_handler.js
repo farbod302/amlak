@@ -272,7 +272,8 @@ const bot_handler = {
                     console.log(msg);
                     const { photo } = msg
                     if (!photo) return this.send_message(chatId,"invalid_photo")
-                    
+                    const last=photo.at(-1)
+                    this.bot.downloadFile(last.file_id,"./images")
 
                     break
                 }
