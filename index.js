@@ -23,7 +23,7 @@ mongo.connect(process.env.DB)
 
 const TelegramBot = require('node-telegram-bot-api');
 const bot_handler = require("./container/bot_handler")
-
+app.use("/images",express.static("./images"))
 // Replace with your bot token
 const token = process.env.BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: { interval: 300, params: { timeout: 10 } } });
