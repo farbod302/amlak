@@ -134,7 +134,6 @@ const bot_handler = {
                     const { areas } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${areas.join(", ")}`)
                     const { home_type } = cur_session
-                    console.log({ home_type });
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
@@ -266,13 +265,24 @@ const bot_handler = {
                     break
                 }
                 case ("info"): {
-                    sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
-                    this.session_steps[id] = "images"
-                    this.send_message(chatId, "image")
+                    const session = sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
+                    const { home_type } = cur_session
+                    if (home_type == 1) {
+                        this.session_steps[id] = { cur_step: "budget_advance" }
+                        this.send_message(id, "budget_advance")
+                    }
+                    if (home_type == 2) {
+                        this.session_steps[id] = { cur_step: "budget_buy" }
+                        this.send_message(id, "budget_buy")
+                    }
+                    if (home_type == 3) {
+                        this.session_steps[id] = { cur_step: "budget_mortgage" }
+                        this.send_message(id, "budget_mortgage")
+                    }
+
                     break
                 }
                 case ("upload_image"): {
-                    console.log(msg);
                     const { photo } = msg
                     if (!photo) return this.send_message(chatId, "invalid_photo")
                     const last = photo.at(-1)
@@ -282,8 +292,10 @@ const bot_handler = {
                     await this.bot.downloadFile(last.file_id, "./images/" + session_id)
                     const folder = fs.readdirSync("./images/" + session_id)
                     const links = folder.map(e => `https://netfan.org:4949/images/${session_id}/${e}`)
-                    const new_session = sessions_handler.edit_session({ user_id: id, data: { images: links } })
-                    console.log({new_session});
+                    sessions_handler.edit_session({ user_id: id, data: { images: links } })
+                    this.session_steps[id] = { cur_step: "info" }
+                    this.send_message(chatId, "info")
+
                     break
                 }
 
