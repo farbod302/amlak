@@ -53,7 +53,8 @@ const bot_handler = {
         const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
         منطقه:${new_search.are}
-        ادرس:${new_search.Address}
+        ادرس:${new_search.address}
+        عکس: ${new_search.images.length? new_search.images.length + "عکس ثبت شد":"عکسی ثبت نشده"}
         بودجه: 
         ${new_search.price_buy ? new_search.price_buy + "تومان قیمت خرید " : ""}
         ${new_search.price_advance ? new_search.price_advance + "تومان قیمت پیش پرداخت " : ""}
@@ -129,6 +130,11 @@ const bot_handler = {
                     this.send_message(chatId, "send_images")
                     const session = sessions_handler.get_session(id)
                     fs.mkdirSync("./images/" + session.session_id)
+                    break
+                }
+                case ("skip_image"): {
+                    this.session_steps[chatId] = { cur_step: "info" }
+                    this.send_message(chatId, "info")
                     break
                 }
                 case ("home"): {
