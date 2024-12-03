@@ -134,6 +134,7 @@ const bot_handler = {
                 }
                 case ("skip_image"): {
                     this.session_steps[chatId] = { cur_step: "info" }
+                    const res = sessions_handler.edit_session({ user_id: id, data: { images: [] } })
                     this.send_message(chatId, "info")
                     break
                 }
