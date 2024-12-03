@@ -265,8 +265,9 @@ const bot_handler = {
                     break
                 }
                 case ("info"): {
-                    const session = sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
+                     sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
                     const { home_type } = cur_session
+                    console.log({home_type},"info");
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
@@ -293,8 +294,10 @@ const bot_handler = {
                     const folder = fs.readdirSync("./images/" + session_id)
                     const links = folder.map(e => `https://netfan.org:4949/images/${session_id}/${e}`)
                     sessions_handler.edit_session({ user_id: id, data: { images: links } })
-                    this.session_steps[id] = { cur_step: "info" }
-                    this.send_message(chatId, "info")
+                    if (this.session_steps[id]?.cur_step !== "info") {
+                        this.session_steps[id] = { cur_step: "info" }
+                        this.send_message(chatId, "info")
+                    }
 
                     break
                 }
