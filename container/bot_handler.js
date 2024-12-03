@@ -1,6 +1,7 @@
 const messages = require("./messages");
 const User = require("../db/users");
 const Search = require("../db/searches");
+const Home = require("../db/files");
 const { uid } = require("uid");
 const controllers = require("../controller");
 const sessions_handler = require("./sessions_handler");
@@ -20,7 +21,6 @@ const bot_handler = {
     async submit_search(id) {
         const session = sessions_handler.get_session(id)
         const new_search = { ...session }
-        console.log({ new_search });
         await new Search(new_search).save()
         const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
@@ -40,6 +40,36 @@ const bot_handler = {
             }
         }
         this.bot.sendMessage(id, message, options)
+    },
+
+    async submit_file(id) {
+        const session = sessions_handler.get_session(id)
+        const new_search = { ...session }
+        new_search.price_buy = new_search.budget_buy || 0
+        new_search.price_advance = new_search.budget_advance || 0
+        new_search.price_rent = new_search.budget_rent || 0
+        new_search.price_mortgage = new_search.budget_mortgage || 0
+        new Home(new_search).save()
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+        شهر:${new_search.city}
+        منطقه:${new_search.are}
+        ادرس:${new_search.Address}
+        بودجه: 
+        ${new_search.price_buy ? new_search.price_buy + "تومان قیمت خرید " : ""}
+        ${new_search.price_advance ? new_search.price_advance + "تومان قیمت پیش پرداخت " : ""}
+        ${new_search.price_rent ? new_search.price_rent + "تومان قیمت اجاره ماهانه " : ""}
+        ${new_search.price_mortgage ? new_search.price_mortgage + "تومان قیمت رهن " : ""}
+        `
+        const options = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "ثبت نهایی ملک", callback_data: '#submit_' + new_search.session_id }],
+                    [{ text: 'بازگشت به صفحه اصلی', callback_data: 'home' }],
+                ]
+            }
+        }
+        this.bot.sendMessage(id, message, options)
+
     },
     add_listeners() {
         this.bot.onText(/\/start/, async (msg) => {
@@ -209,9 +239,9 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text } })
                     this.session_steps[id] = null
-                    this.submit_search(id)
+                    session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
                 }
                 case ("budget_buy"): {
@@ -221,9 +251,9 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
+                    const { session_type }=sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
                     this.session_steps[id] = null
-                    this.submit_search(id)
+                    session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
                 }
                 case ("budget_mortgage"): {
@@ -233,9 +263,9 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
+                    const { session_type }= sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
                     this.session_steps[id] = null
-                    this.submit_search(id)
+                    session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
                 }
 
@@ -265,7 +295,7 @@ const bot_handler = {
                     break
                 }
                 case ("info"): {
-                    const cur_session= sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
+                    const cur_session = sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
                     const { home_type } = cur_session
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
