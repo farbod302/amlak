@@ -265,9 +265,8 @@ const bot_handler = {
                     break
                 }
                 case ("info"): {
-                     sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
+                    const cur_session= sessions_handler.edit_session({ user_id: id, data: { info: msg.text } })
                     const { home_type } = cur_session
-                    console.log({home_type},"info");
                     if (home_type == 1) {
                         this.session_steps[id] = { cur_step: "budget_advance" }
                         this.send_message(id, "budget_advance")
