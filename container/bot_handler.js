@@ -276,7 +276,7 @@ const bot_handler = {
                         invoice_id
                     }
                     const message = `درخواست شما ثبت شد<br>شناسه پرداخت: <code>${invoice_id}</code><br>مبلغ: ${price} تومان<br>وجه را به شماره کارت:<br><code>5859831050068153</code> واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @farbod_302 ارسال کنید`;
-                    bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+                   this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
                     new Invoice(new_invoice).save()
                     break
 
