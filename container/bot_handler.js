@@ -272,11 +272,11 @@ const bot_handler = {
                         telegram_id: id,
                         amount: +(price.trim()),
                         date: Date.now(),
-                        status: false,
+                        status: 0,
                         invoice_id
                     }
-                    const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>5859831050068153</code> واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @farbod_302 ارسال کنید`;
-                   this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+                    const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>5859831050068153</code> \n واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @farbod_302 ارسال کنید`;
+                    this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
                     new Invoice(new_invoice).save()
                     break
 
