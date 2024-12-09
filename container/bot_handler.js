@@ -2,6 +2,7 @@ const messages = require("./messages");
 const User = require("../db/users");
 const Search = require("../db/searches");
 const Home = require("../db/files");
+const Invoice = require("../db/invoces");
 const { uid } = require("uid");
 const controllers = require("../controller");
 const sessions_handler = require("./sessions_handler");
@@ -158,7 +159,7 @@ const bot_handler = {
                 case ("payment"): {
                     const user = await User.findOne({ telegram_id: id })
                     const { asset, vip, vip_until } = user
-                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + "5" + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
+                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + "5" + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
                     const options = {
                         reply_markup: {
                             inline_keyboard: [
@@ -170,6 +171,10 @@ const bot_handler = {
                     }
                     this.bot.sendMessage(chatId, msg, options);
 
+                }
+                case ("popup"): {
+                    this.session_steps[id] = { cur_step: "popup" }
+                    this.bot.sendMessage(chatId, "مبلغ افزایش اعتبار را به تومان وارد کنید:");
                 }
             }
         })
@@ -254,6 +259,25 @@ const bot_handler = {
                     this.session_steps[id] = { cur_step: "budget_rent" }
                     this.send_message(id, "budget_rent")
                     break
+                }
+                case ("popup"): {
+                    const price = msg.text
+                    const is_valid = controllers.price(price)
+                    if (!is_valid) {
+                        this.send_message(chatId, "invalid_price")
+                        return
+                    }
+                    const invoice_id = uid(6)
+                    const new_invoice = {
+                        telegram_id: id,
+                        amount: +(price.trim()),
+                        date: Date.now(),
+                        status: false,
+                        invoice_id
+                    }
+                    const msg=`درخواست شما ثبت شد \n شناسه پرداخت: \`${invoice_id}\` \n مبلغ: ${price} تومان \n وجه را شماره کارت:\n \`5859831050068153\` واریز کنید و رسید پرداخت را همراه با شناسه پرداخت یه حساب @farbod_302 ارسال کنید `
+                    this.bot.sendMessage(chatId, msg)
+
                 }
 
 

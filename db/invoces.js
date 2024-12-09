@@ -3,10 +3,11 @@ const mongoose = require("mongoose")
 
 
 const invoice = mongoose.Schema({
-    user_id: String,
+    telegram_id: String,
     amount:Number,
     date:Number,
     status:Number,
+    invoice_id:String
 })
 
 
