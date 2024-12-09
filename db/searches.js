@@ -15,6 +15,7 @@ const searches = mongoose.Schema({
     budget_rent: { type: Number, default: 0 },
     budget_mortgage: { type: Number, default: 0 },
     active: { type: Boolean, default: true },
+    pay: { type: Boolean, default: false },
 
 
 })

@@ -54,7 +54,7 @@ const bot_handler = {
         شهر:${new_search.city}
         منطقه:${new_search.are}
         ادرس:${new_search.address}
-        عکس: ${new_search.images.length? new_search.images.length + "عکس ثبت شد":"عکسی ثبت نشده"}
+        عکس: ${new_search.images.length ? new_search.images.length + "عکس ثبت شد" : "عکسی ثبت نشده"}
         بودجه: 
         ${new_search.price_buy ? new_search.price_buy + "تومان قیمت خرید " : ""}
         ${new_search.price_advance ? new_search.price_advance + "تومان قیمت پیش پرداخت " : ""}
@@ -92,6 +92,7 @@ const bot_handler = {
                         [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                         [{ text: 'جست و جو ملک', callback_data: 'search' }],
                         [{ text: 'مالی', callback_data: 'payment' }],
+                        [{ text: 'آگهی های من', callback_data: 'my_homes' }, { text: 'جست و جو های اخیر من', callback_data: 'my_searches' }],
                     ]
                 }
             };
@@ -146,12 +147,35 @@ const bot_handler = {
                                 [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                                 [{ text: 'جست و جو ملک', callback_data: 'search' }],
                                 [{ text: 'مالی', callback_data: 'payment' }],
+                                [{ text: 'آگهی های من', callback_data: 'my_homes' }, { text: 'جست و جو های اخیر من', callback_data: 'my_searches' }],
                             ],
                             remove_keyboard: true
                         }
                     };
                     this.bot.sendMessage(chatId, 'خوش آمدید. چطور میتونم کمکتون کنم؟:', options);
                     break
+                }
+                case ("payment"): {
+                    const user = await User.findOne({ telegram_id: id })
+                    const { asset, vip, vip_until } = user
+                    const msg = `موجودی حساب شما: ${asset} تومان
+                    اشتراک vip: ${vip ? "فعال" : "غیر فعال"}
+                    ${vip ? "اعتبار اشتراک vip تا" + "5" + "روز آینده" : ""}
+                    با تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه آگهی ثبت کنید و یا ملک جستجو کنید
+                    هزینه اشتراک vip برای یک ماه: 100,000 تومان
+                    هزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان
+                    `
+                    const options = {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: 'افزایش اعتبار', callback_data: 'popup' }],
+                                [{ text: 'فعال سازی اشتراک vip', callback_data: 'vip' }],
+                            ],
+                            remove_keyboard: true
+                        }
+                    }
+                    this.bot.sendMessage(chatId, msg, options);
+
                 }
             }
         })
@@ -258,7 +282,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    const { session_type }=sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
                     this.session_steps[id] = null
                     session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
@@ -270,7 +294,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    const { session_type }= sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
                     this.session_steps[id] = null
                     session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
