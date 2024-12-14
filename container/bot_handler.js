@@ -175,6 +175,7 @@ const bot_handler = {
                         }
                     }
                     this.bot.sendMessage(chatId, msg, options);
+                    break
 
                 }
                 case ("popup"): {
