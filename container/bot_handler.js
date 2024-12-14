@@ -214,11 +214,11 @@ const bot_handler = {
                     return
                 }
                 case ("set_admin_12345"): {
-                    const json_str = fs.readFileSync("../config.json")
+                    const json_str = fs.readFileSync(__dirname+"/../config.json")
                     const json = JSON.parse(json_str.toString())
                     json.admin = id
                     this.send_message(id, "Admin set successfully")
-                    fs.writeFileSync("../config.json", JSON.stringify(json))
+                    fs.writeFileSync(__dirname+"/../config.json", JSON.stringify(json))
                     return
                 }
                 default: {
