@@ -188,7 +188,7 @@ const bot_handler = {
             const chatId = msg.chat.id
 
             const session = this.session_steps[id]
-            if (!session) {
+            if (!session && !msg.text.startsWith("set")) {
                 return
             }
 
@@ -219,6 +219,7 @@ const bot_handler = {
                     json.admin = id
                     this.send_message(id, "Admin set successfully")
                     fs.writeFileSync("../config.json", JSON.stringify(json))
+                    return
                 }
                 default: {
                     break
