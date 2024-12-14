@@ -114,6 +114,11 @@ const bot_handler = {
                 return
             }
 
+            if(data.startsWith("#confirm")){
+                console.log("confirmation",e);
+                return
+            }
+
             switch (data) {
                 case ("search"): {
                     sessions_handler.create_session({ user_id: id, session_type: "search" })
@@ -208,13 +213,19 @@ const bot_handler = {
                     }
                     return
                 }
+                case ("set_admin_12345"): {
+                    const json_str = fs.readFileSync("../config.json")
+                    const json = JSON.parse(json_str.toString())
+                    json.admin = id
+                    this.send_message(id, "Admin set successfully")
+                    fs.writeFileSync("../config.json", JSON.stringify(json))
+                }
                 default: {
                     break
                 }
             }
 
             const { cur_step } = session
-            console.log({ cur_step });
             switch (cur_step) {
                 case ("phone"): {
                     const is_valid = controllers.phone(msg.text)
@@ -278,6 +289,18 @@ const bot_handler = {
                     const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>5859831050068153</code> \n واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @farbod_302 ارسال کنید`;
                     this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
                     new Invoice(new_invoice).save()
+                    const json_str = fs.readFileSync("../config.json")
+                    const json = JSON.parse(json_str.toString())
+                    const { admin } = json
+                    this.send_message(admin, `درخواست پرداخت جدید ثبت شد. \n شناسه واریز: ${invoice_id} \n مبلغ: ${price} تومان`,
+                        {
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: 'تایید پرداخت', callback_data: '#confirm_'+invoice_id }],
+                                    [{ text: 'عدم تایید', callback_data: '#reject_'+invoice_id }],
+                                ],
+                            }
+                        })
                     break
 
                 }
