@@ -294,7 +294,7 @@ const bot_handler = {
                     const json_str = fs.readFileSync(__dirname+"/../config.json")
                     const json = JSON.parse(json_str.toString())
                     const { admin } = json
-                    this.send_message(admin, `درخواست پرداخت جدید ثبت شد. \n شناسه واریز: ${invoice_id} \n مبلغ: ${price} تومان`,
+                    this.bot.sendMessage(admin, `درخواست پرداخت جدید ثبت شد. \n شناسه واریز: ${invoice_id} \n مبلغ: ${price} تومان`,
                         {
                             reply_markup: {
                                 inline_keyboard: [
