@@ -155,7 +155,7 @@ const bot_handler = {
                 const oneMonth = 1000 * 60 * 60 * 24 * 30
                 const new_date = cur_date + oneMonth
                 const convertor = (e) => new Intl.DateTimeFormat('fa-IR').format(new Date(e))
-                const msg = `تمدید / خرید اشتراک VIP:\nوضعیت فعلی اشتراک: ${vip ? "فعال" : "غیر فعال"}\n اعتبار فعللی اشتراک تا: ${!vip ? "-" : convertor(cur_date)}\n اعتبار اشتراک بعد از تایید پرداخت: ${convertor(new_date)}`
+                const msg = `تمدید / خرید اشتراک VIP\nوضعیت فعلی اشتراک: ${vip ? "فعال" : "غیر فعال"}\n اعتبار فعللی اشتراک تا: ${!vip ? "-" : convertor(cur_date)}\n اعتبار اشتراک بعد از تایید پرداخت: ${convertor(new_date)}`
                 this.bot.sendMessage(chatId, msg, {
                     reply_markup: {
                         inline_keyboard: [
@@ -226,7 +226,13 @@ const bot_handler = {
                 case ("payment"): {
                     const user = await User.findOne({ telegram_id: id })
                     const { asset, vip, vip_until } = user
-                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + "5" + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
+                    let day_remain=0
+                    if(vip_until && vip_until > Date.now()){
+                        const def=vip_until-Date.now()
+                        const day=Math.round(def/(1000*60*24))
+                        day_remain=day
+                    }
+                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
                     const options = {
                         reply_markup: {
                             inline_keyboard: [
