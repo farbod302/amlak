@@ -113,7 +113,7 @@ const bot_handler = {
                 this.session_steps[chatId] = { cur_step: "phone" }
                 return
             }
-
+            console.log({data});
             if (data.startsWith("#confirm")) {
                 const payment_id = data.replace("#confirm_", "")
                 const payment = await Invoice.findOne({ invoice_id: payment_id })
