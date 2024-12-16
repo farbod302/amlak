@@ -114,10 +114,37 @@ const bot_handler = {
                 return
             }
 
-            if(data.startsWith("#confirm")){
-                console.log("confirmation",e);
+            if (data.startsWith("#confirm")) {
+                const payment_id = data.replace("#confirm_", "")
+                const payment = await Invoice.findOne({ invoice_id: payment_id })
+                if (!payment) {
+                    this.bot.sendMessage(chatId, "فاکتور یافت نشد")
+                    return
+                }
+                if(payment.status === 1){
+                    this.bot.sendMessage(chatId, "فاکتور قبلا تایید شده")
+                    return
+
+                }
+                const { amount, telegram_id } = payment
+                await User.findOneAndUpdate({ telegram_id }, { $inc: { asset: amount } })
+                this.bot.sendMessage(chatId, "انجام شد")
+                await Invoice.findOneAndUpdate({ invoice_id: payment_id }, { $set: { status: 1 } })
+                this.bot.sendMessage(telegram_id,`حساب شما به مبلغ: ${amount} شارژ شد`)
                 return
             }
+            if (data.startsWith("#reject")) {
+                const payment_id = data.replace("#reject_", "")
+                const payment = await Invoice.findOne({ invoice_id: payment_id })
+                if (!payment) {
+                    this.bot.sendMessage(chatId, "فاکتور یافت نشد")
+                    return
+                }
+                this.bot.sendMessage(chatId, "فاکتور رد شد")
+                await Invoice.findOneAndUpdate({ invoice_id: payment_id }, { $set: { status: 2 } })
+                return
+            }
+
 
             switch (data) {
                 case ("search"): {
@@ -215,11 +242,11 @@ const bot_handler = {
                     return
                 }
                 case ("set_admin_12345"): {
-                    const json_str = fs.readFileSync(__dirname+"/../config.json")
+                    const json_str = fs.readFileSync(__dirname + "/../config.json")
                     const json = JSON.parse(json_str.toString())
                     json.admin = id
                     this.bot.sendMessage(id, "Admin set successfully")
-                    fs.writeFileSync(__dirname+"/../config.json", JSON.stringify(json))
+                    fs.writeFileSync(__dirname + "/../config.json", JSON.stringify(json))
                     return
                 }
                 default: {
@@ -291,15 +318,15 @@ const bot_handler = {
                     const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>5859831050068153</code> \n واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @farbod_302 ارسال کنید`;
                     this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
                     new Invoice(new_invoice).save()
-                    const json_str = fs.readFileSync(__dirname+"/../config.json")
+                    const json_str = fs.readFileSync(__dirname + "/../config.json")
                     const json = JSON.parse(json_str.toString())
                     const { admin } = json
                     this.bot.sendMessage(admin, `درخواست پرداخت جدید ثبت شد. \n شناسه واریز: ${invoice_id} \n مبلغ: ${price} تومان`,
                         {
                             reply_markup: {
                                 inline_keyboard: [
-                                    [{ text: 'تایید پرداخت', callback_data: '#confirm_'+invoice_id }],
-                                    [{ text: 'عدم تایید', callback_data: '#reject_'+invoice_id }],
+                                    [{ text: 'تایید پرداخت', callback_data: '#confirm_' + invoice_id }],
+                                    [{ text: 'عدم تایید', callback_data: '#reject_' + invoice_id }],
                                 ],
                             }
                         })
