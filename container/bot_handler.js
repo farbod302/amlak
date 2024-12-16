@@ -177,7 +177,7 @@ const bot_handler = {
                 const oneMonth = 1000 * 60 * 60 * 24 * 30
                 const new_date = cur_date + oneMonth
                 await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -100000 }, $set: { vip: true, vip_until: new_date } })
-                this.bot.sendMessage("تمدید / خرید اشتراک با موفقیت انجام شد")
+                this.bot.sendMessage(chatId,"تمدید / خرید اشتراک با موفقیت انجام شد")
             }
 
 
