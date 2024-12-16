@@ -177,7 +177,14 @@ const bot_handler = {
                 const oneMonth = 1000 * 60 * 60 * 24 * 30
                 const new_date = cur_date + oneMonth
                 await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -100000 }, $set: { vip: true, vip_until: new_date } })
-                this.bot.sendMessage(chatId,"تمدید / خرید اشتراک با موفقیت انجام شد")
+                this.bot.sendMessage(chatId,"تمدید / خرید اشتراک با موفقیت انجام شد",{
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'صفحه اصلی', callback_data: 'home' }],
+                           
+                        ],
+                    }
+                })
             }
 
 
@@ -232,7 +239,7 @@ const bot_handler = {
                         const day=Math.round(def/(1000*60*60*24))
                         day_remain=day
                     }
-                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
+                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا"  + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
                     const options = {
                         reply_markup: {
                             inline_keyboard: [
