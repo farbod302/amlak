@@ -229,7 +229,7 @@ const bot_handler = {
                     let day_remain=0
                     if(vip_until && vip_until > Date.now()){
                         const def=vip_until-Date.now()
-                        const day=Math.round(def/(1000*60*24))
+                        const day=Math.round(def/(1000*60*60*24))
                         day_remain=day
                     }
                     const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
