@@ -121,7 +121,7 @@ const bot_handler = {
                     this.bot.sendMessage(chatId, "فاکتور یافت نشد")
                     return
                 }
-                if(payment.status === 1){
+                if (payment.status === 1) {
                     this.bot.sendMessage(chatId, "فاکتور قبلا تایید شده")
                     return
 
@@ -130,7 +130,7 @@ const bot_handler = {
                 await User.findOneAndUpdate({ telegram_id }, { $inc: { asset: amount } })
                 this.bot.sendMessage(chatId, "انجام شد")
                 await Invoice.findOneAndUpdate({ invoice_id: payment_id }, { $set: { status: 1 } })
-                this.bot.sendMessage(telegram_id,`حساب شما به مبلغ: ${amount} شارژ شد`)
+                this.bot.sendMessage(telegram_id, `حساب شما به مبلغ: ${amount} شارژ شد`)
                 return
             }
             if (data.startsWith("#reject")) {
@@ -143,6 +143,28 @@ const bot_handler = {
                 this.bot.sendMessage(chatId, "فاکتور رد شد")
                 await Invoice.findOneAndUpdate({ invoice_id: payment_id }, { $set: { status: 2 } })
                 return
+            }
+            if (data == "VIP") {
+                const user = await User.findOne({ telegram_id: id })
+                const { asset, vip, vip_until } = user
+                if (asset < 100000) {
+                    this.bot.sendMessage(chatId, "موجودی حساب شما برای  فعال سازی VIP کافی نیست")
+                    return
+                }
+                const cur_date = Math.max(Date.now(), vip_until)
+                const oneMonth = 1000 * 60 * 60 * 24 * 30
+                const new_date = cur_date + oneMonth
+                const convertor = (e) => new Intl.DateTimeFormat('fa-IR').format(new Date(e))
+                const msg = `تمدید / خرید اشتراک VIP:\nوضعیت فعلی اشتراک: ${vip ? "فعال" : "غیر فعال"}\n اعتبار فعللی اشتراک تا: ${!vip ? "-" : convertor(cur_date)}\n اعتبار اشتراک بعد از تایید پرداخت: ${convertor(new_date)}`
+                this.bot.sendMessage(chatId, msg, {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "تایید خرید/تمدید اشتراک", callback_data: 'confirm_vip' }],
+                        ]
+                    }
+                })
+                return
+
             }
 
 
