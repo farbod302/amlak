@@ -218,7 +218,7 @@ const bot_handler = {
                         reply_markup: {
                             inline_keyboard: [
                                 [{ text: 'افزایش اعتبار', callback_data: 'popup' }],
-                                [{ text: 'فعال سازی اشتراک vip', callback_data: 'vip' }],
+                                [{ text: 'فعال سازی اشتراک vip', callback_data: 'VIP' }],
                             ],
                             remove_keyboard: true
                         }
