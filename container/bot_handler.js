@@ -297,7 +297,7 @@ const bot_handler = {
                         await this.bot.sendMessage(chatId, msg, {
                             reply_markup: {
                                 inline_keyboard: [
-                                    [{ text: 'مشاهده شناره تماس فروشنده', callback_data: `#call_${session_id}` }],
+                                    [{ text: 'مشاهده شماره تماس فروشنده', callback_data: `#call_${session_id}` }],
                                 ],
                             }
                         })
