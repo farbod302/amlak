@@ -288,14 +288,14 @@ const bot_handler = {
                                 caption: index === 0 ? msg : ""
                             }
                         })
-                        if (media.length) {
+                        if (!media.length) {
                             media.push({
                                 type: "photo",
                                 media: "https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg",
                                 caption: msg
                             })
                         }
-                        this.bot.sendMediaGroup(chatId, media, {
+                        this.bot.sendMediaGroup(chatId, media, {},{
                             reply_markup: {
                                 inline_keyboard: [
                                     [{ text: 'مشاهده شماره تماس فروشنده', callback_data: `call_${session_id}` }],
