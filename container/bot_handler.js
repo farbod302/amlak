@@ -245,7 +245,7 @@ const bot_handler = {
                 const query = {
                     home_type,
                     city,
-                    areas: { $in: areas },
+                    area: { $in: areas },
                     active: true,
                 }
                 if (home_type === 1) {
