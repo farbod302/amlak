@@ -276,7 +276,7 @@ const bot_handler = {
                         }
                     }
                     for (const f of files) {
-                        const { info, areas, city, address, images } = f
+                        const { info, areas, city, address, images,session_id } = f
                         const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
                         console.log(images_path);
                         type_finder(f)
@@ -295,7 +295,13 @@ const bot_handler = {
                                 caption: msg
                             })
                         }
-                        this.bot.sendMediaGroup(chatId, media, {})
+                        this.bot.sendMediaGroup(chatId, media, {
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: 'مشاهده شماره تماس فروشنده', callback_data: `call_${session_id}` }],
+                                ],
+                            }
+                        })
                     }
                 }
             }
