@@ -258,6 +258,7 @@ const bot_handler = {
                 if (home_type === 3) {
                     query.price_mortgage = { $lte: budget_mortgage }
                 }
+                console.log(query);
                 const files = await Files.find(query)
                 console.log({files});
             }
