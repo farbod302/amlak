@@ -295,7 +295,7 @@ const bot_handler = {
                                 caption: msg
                             })
                         }
-                        this.bot.sendMediaGroup(chatId, media, {
+                        this.bot.sendMediaGroup(chatId, media.slice(0,1), {
                             reply_markup: {
                                 inline_keyboard: [
                                     [{ text: 'صفحه اصلی', callback_data: 'home' }],
