@@ -241,12 +241,13 @@ const bot_handler = {
             if (data.startsWith("#search_")) {
                 const search_id = data.replace("#search_", "")
                 const search = await Search.findOne({ session_id: search_id })
-                const { areas, home_type, city, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
+                const { areas, home_type, city,state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
                 const query = {
                     home_type,
                     city,
-                    area: { $in: areas },
+                    areas: { $in: areas },
                     active: true,
+                    state
                 }
                 if (home_type === 1) {
                     query.price_advance = { $lte: budget_advance }

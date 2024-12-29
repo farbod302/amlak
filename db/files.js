@@ -16,7 +16,7 @@ const files = mongoose.Schema({
     images: { type: Array, default: [] },
     state: { type: String, default: "زنجان" },
     city: String,
-    area: String,
+    areas: String,
     info: String,
     submitted_at:Number,
     address:String
