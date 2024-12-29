@@ -285,23 +285,20 @@ const bot_handler = {
                             return {
                                 type: "photo",
                                 media: fs.createReadStream(e),
-                                caption: index === 0 ? msg : ""
                             }
                         })
                         if (!media.length) {
                             media.push({
                                 type: "photo",
                                 media: "https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg",
-                                caption: msg
                             })
                         }
-                        this.bot.sendMediaGroup(chatId, media.slice(0,1), {
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [{ text: 'صفحه اصلی', callback_data: 'home' }],
+                        await this.bot.sendMediaGroup(chatId, media)
+                        await this.bot.sendMessage(chatId, msg, {
+                            inline_keyboard: [
+                                [{ text: 'مشاهده شناره تماس فروشنده', callback_data: `#call_${session_id}` }],
 
-                                ],
-                            }
+                            ],
                         })
                     }
                 }
