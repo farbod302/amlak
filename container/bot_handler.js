@@ -510,7 +510,7 @@ const bot_handler = {
                     break
                 }
                 case ("single_area"): {
-                    sessions_handler.edit_session({ user_id: id, data: { area: msg.text } })
+                    sessions_handler.edit_session({ user_id: id, data: { areas: msg.text } })
                     this.session_steps[id] = { cur_step: "address" }
                     this.send_message(chatId, "address")
                     break
