@@ -277,7 +277,7 @@ const bot_handler = {
                     }
                     for (const f of files) {
                         const { info, areas, city, address, images } = f
-                        const images_to_send = !images.length ? images : ["https://netfan.org:4949/images/36c74196/file_8.jpg"]
+                        const images_to_send = !images.length ? images : ["https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg"]
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
                         const media = images_to_send.map((e, index) => {
