@@ -3,6 +3,7 @@ const User = require("../db/users");
 const Search = require("../db/searches");
 const Home = require("../db/files");
 const Invoice = require("../db/invoces");
+const Files = require("../db/files");
 const { uid } = require("uid");
 const controllers = require("../controller");
 const sessions_handler = require("./sessions_handler");
@@ -22,6 +23,11 @@ const bot_handler = {
     async submit_search(id) {
         const session = sessions_handler.get_session(id)
         const new_search = { ...session }
+        const user = await User.findOne({ telegram_id: id })
+        const { vip } = user
+        if (vip) {
+            new_search.pay = true
+        }
         await new Search(new_search).save()
         const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
@@ -46,6 +52,12 @@ const bot_handler = {
     async submit_file(id) {
         const session = sessions_handler.get_session(id)
         const new_search = { ...session }
+        const user = await User.findOne({ telegram_id: id })
+        const { vip } = user
+        if (vip) {
+            new_search.pay = true
+        }
+        new_search.user_id = user.user_id
         new_search.price_buy = new_search.budget_buy || 0
         new_search.price_advance = new_search.budget_advance || 0
         new_search.price_rent = new_search.budget_rent || 0
@@ -61,6 +73,9 @@ const bot_handler = {
         ${new_search.price_advance ? new_search.price_advance + "تومان قیمت پیش پرداخت " : ""}
         ${new_search.price_rent ? new_search.price_rent + "تومان قیمت اجاره ماهانه " : ""}
         ${new_search.price_mortgage ? new_search.price_mortgage + "تومان قیمت رهن " : ""}
+        در صورت صحت اطلاعات روی دکمه "ثبت نهایی ملک" کلیک کنید تا فایل جدید ثبت شود
+        در صورت ثبت نهایی مبلغ 10,000 از اعتبار شما کسر خواهد شد
+        در صورت فعال بودن اشتراک VIP هزینه ای کسر نخواهد شد
         `
         const options = {
             reply_markup: {
@@ -113,7 +128,6 @@ const bot_handler = {
                 this.session_steps[chatId] = { cur_step: "phone" }
                 return
             }
-            console.log({ data });
             if (data.startsWith("#confirm")) {
                 const payment_id = data.replace("#confirm_", "")
                 const payment = await Invoice.findOne({ invoice_id: payment_id })
@@ -143,6 +157,44 @@ const bot_handler = {
                 this.bot.sendMessage(chatId, "فاکتور رد شد")
                 await Invoice.findOneAndUpdate({ invoice_id: payment_id }, { $set: { status: 2 } })
                 return
+            }
+            if (data.startsWith("#submit")) {
+                const file_id = data.replace("#submit_", "")
+                const file = await Files.findOne({ session_id: file_id })
+                if (file.pay) {
+                    await Files.findOneAndUpdate({ session_id: file_id }, { $set: { active: true } })
+                    this.bot.sendMessage(chatId, "ملک ثبت شد و هم اکنون در دسترس قرار گرفته")
+                    return
+                } else {
+                    const user = await User.findOne({ telegram_id: id })
+                    const { asset } = user
+                    if (asset < 10000) {
+                        this.bot.sendMessage(chatId, "موجودی حساب شما برای ثبت ملک کافی نیست. لطفا از بخش مالی اقدام به شارژ حساب کنید")
+                        return
+                    }
+                    await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -10000 } })
+                    await Files.findOneAndUpdate({ session_id: file_id }, { $set: { active: true, pay: true } })
+                    this.bot.sendMessage(chatId, "ملک ثبت شد و هم اکنون در دسترس قرار گرفته")
+                }
+                return
+            }
+            if (data.startsWith("#deactive")) {
+                const file_id = data.replace("#deactive_", "")
+                const file = await Files.findOne({ session_id: file_id })
+                if (!file) {
+                    this.bot.sendMessage(chatId, "درخواست نا معتبر")
+                    return
+                }
+                const { user_id } = file
+                const user = await User.findOne({ telegram_id: id })
+                if (user.user_id !== user_id) {
+                    this.bot.sendMessage(chatId, "درخواست نا معتبر")
+                    return
+                }
+                await Files.findOneAndUpdate({ session_id: file_id }, { $set: { active: false } })
+                this.bot.sendMessage(chatId, "فایل از دسترس خارج شد")
+                return
+
             }
             if (data == "VIP") {
                 const user = await User.findOne({ telegram_id: id })
@@ -177,14 +229,37 @@ const bot_handler = {
                 const oneMonth = 1000 * 60 * 60 * 24 * 30
                 const new_date = cur_date + oneMonth
                 await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -100000 }, $set: { vip: true, vip_until: new_date } })
-                this.bot.sendMessage(chatId,"تمدید / خرید اشتراک با موفقیت انجام شد",{
+                this.bot.sendMessage(chatId, "تمدید / خرید اشتراک با موفقیت انجام شد", {
                     reply_markup: {
                         inline_keyboard: [
                             [{ text: 'صفحه اصلی', callback_data: 'home' }],
-                           
+
                         ],
                     }
                 })
+            }
+            if (data.startsWith("#search_")) {
+                const search_id = data.replace("#confirm_", "")
+                const search = await Search.findOne({ session_id: search_id })
+                const { areas, home_type, city, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
+                const query = {
+                    home_type,
+                    city,
+                    areas: { $in: areas },
+                    active: true,
+                }
+                if (home_type === 1) {
+                    query.price_advance = { $lte: budget_advance }
+                    query.price_rent = { $lte: budget_rent }
+                }
+                if (home_type === 2) {
+                    query.price_buy = { $lte: budget_buy }
+                }
+                if (home_type === 3) {
+                    query.price_mortgage = { $lte: budget_mortgage }
+                }
+                const files = await Files.find(query)
+                console.log({files});
             }
 
 
@@ -233,13 +308,13 @@ const bot_handler = {
                 case ("payment"): {
                     const user = await User.findOne({ telegram_id: id })
                     const { asset, vip, vip_until } = user
-                    let day_remain=0
-                    if(vip_until && vip_until > Date.now()){
-                        const def=vip_until-Date.now()
-                        const day=Math.round(def/(1000*60*60*24))
-                        day_remain=day
+                    let day_remain = 0
+                    if (vip_until && vip_until > Date.now()) {
+                        const def = vip_until - Date.now()
+                        const day = Math.round(def / (1000 * 60 * 60 * 24))
+                        day_remain = day
                     }
-                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا"  + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
+                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
                     const options = {
                         reply_markup: {
                             inline_keyboard: [
