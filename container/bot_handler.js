@@ -291,7 +291,7 @@ const bot_handler = {
                                 caption: index === 0 ? msg : ""
                             }
                         })
-                        this.bot.sendMediaGroup(chatId, media)
+                        this.bot.sendMediaGroup(chatId, media,{})
                     }
                 }
             }
