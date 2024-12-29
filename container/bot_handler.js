@@ -295,10 +295,11 @@ const bot_handler = {
                         }
                         await this.bot.sendMediaGroup(chatId, media)
                         await this.bot.sendMessage(chatId, msg, {
-                            inline_keyboard: [
-                                [{ text: 'مشاهده شناره تماس فروشنده', callback_data: `#call_${session_id}` }],
-
-                            ],
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: 'مشاهده شناره تماس فروشنده', callback_data: `#call_${session_id}` }],
+                                ],
+                            }
                         })
                     }
                 }
