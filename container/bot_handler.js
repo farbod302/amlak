@@ -268,36 +268,36 @@ const bot_handler = {
                 if (!files.length) {
                     this.bot.sendMessage(chatId, "در حال حاضر فایلی مناسب شما وجود ندارد")
                 } else {
-                    let msg = ``
 
-                    const type_finder = (f) => {
-                        if (f.type === 1) {
-                            msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
-                        }
-                    }
+                    let cnt=0
                     for (const f of files) {
+                        cnt++
+                        let msg = `${cnt}- `
+                        const type_finder = (f) => {
+                            if (f.type === 1) {
+                                msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
+                            }
+                        }
                         const { info, areas, city, address, images, session_id } = f
                         const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
                         console.log(images_path);
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
-                        const media = images_path.map((e, index) => {
-                            return {
-                                type: "photo",
-                                media: fs.createReadStream(e),
-                            }
-                        })
-                        if (!media.length) {
-                            media.push({
-                                type: "photo",
-                                media: "https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg",
+                        if (images.length) {
+                            const media = images_path.map((e, index) => {
+                                return {
+                                    type: "photo",
+                                    media: fs.createReadStream(e),
+                                }
                             })
+                            await this.bot.sendMediaGroup(chatId, media)
+                        } else {
+                            msg += "عکسی از این ملک موجود نیست"
                         }
-                        await this.bot.sendMediaGroup(chatId, media)
                         await this.bot.sendMessage(chatId, msg, {
                             reply_markup: {
                                 inline_keyboard: [
-                                    [{ text: 'مشاهده شماره تماس فروشنده', callback_data: `#call_${session_id}` }],
+                                    [{ text: 'ارتباط با فروشنده', callback_data: `#call_${session_id}` }],
                                 ],
                             }
                         })
