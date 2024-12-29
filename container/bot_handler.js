@@ -284,7 +284,7 @@ const bot_handler = {
                             return {
                                 type: "photo",
                                 media: e,
-                                caption: index === 0 ? msg : ""
+                                caption: index === 0 ? msg : "e"
                             }
                         })
                         console.log(media);
