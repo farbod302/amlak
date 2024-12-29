@@ -285,7 +285,7 @@ const bot_handler = {
                             return {
                                 type: "photo",
                                 media: fs.createReadStream(e),
-                                caption: index === 0 ? msg : null
+                                caption: index === 0 ? msg : ""
                             }
                         })
                         this.bot.sendMediaGroup(chatId, media)
