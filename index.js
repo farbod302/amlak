@@ -2,6 +2,8 @@ const express = require("express")
 const app = express()
 const bodyParser = require("body-parser")
 const fs = require("fs")
+const cors=require("cors")
+app.use(cors())
 require("dotenv").config()
 
 const https = require("https")
