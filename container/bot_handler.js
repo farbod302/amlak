@@ -277,16 +277,15 @@ const bot_handler = {
                     }
                     for (const f of files) {
                         const { info, areas, city, address, images } = f
-                        const images_to_send = !images.length ? images : ["https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg",
-                            "https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg"
-                        ]
+                        const images_path=images.map(e=>e.replace("https://netfan.org:4949",`${__dirname}/../`))
+                        console.log(images_path);
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
-                        const media = images_to_send.map((e, index) => {
+                        const media = images_path.map((e, index) => {
                             return {
                                 type: "photo",
-                                media: e,
-                                caption: index === 0 ? msg : ""
+                                media: fs.createReadStream(e),
+                                caption: index === 0 ? msg : null
                             }
                         })
                         this.bot.sendMediaGroup(chatId, media)
