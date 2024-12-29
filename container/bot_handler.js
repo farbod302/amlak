@@ -284,7 +284,10 @@ const bot_handler = {
                         const media = images_path.map((e, index) => {
                             return {
                                 type: "photo",
-                                media: fs.createReadStream(e),
+                                media: {
+                                    source:fs.createReadStream(e),
+                                    contentType: 'image/jpg'
+                                },
                                 caption: index === 0 ? msg : ""
                             }
                         })
