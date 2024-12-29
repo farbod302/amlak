@@ -48,6 +48,10 @@ const bot_handler = {
         }
         this.bot.sendMessage(id, message, options)
     },
+    price_convert(p) {
+        const { format } = Intl.NumberFormat()
+        return format(p) + " "
+    },
 
     async submit_file(id) {
         const session = sessions_handler.get_session(id)
@@ -62,6 +66,7 @@ const bot_handler = {
         new_search.price_advance = new_search.budget_advance || 0
         new_search.price_rent = new_search.budget_rent || 0
         new_search.price_mortgage = new_search.budget_mortgage || 0
+        new_search.submitted_at = Date.now()
         new Home(new_search).save()
         const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
@@ -241,7 +246,7 @@ const bot_handler = {
             if (data.startsWith("#search_")) {
                 const search_id = data.replace("#search_", "")
                 const search = await Search.findOne({ session_id: search_id })
-                const { areas, home_type, city,state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
+                const { areas, home_type, city, state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
                 const query = {
                     home_type,
                     city,
@@ -259,9 +264,32 @@ const bot_handler = {
                 if (home_type === 3) {
                     query.price_mortgage = { $lte: budget_mortgage }
                 }
-                console.log(query);
-                const files = await Files.find(query)
-                console.log({files});
+                const files = await Files.find(query).sort({ submitted_at: -1 }).limit(7)
+                if (!files.length) {
+                    this.bot.sendMessage(chatId, "در حال حاضر فایلی مناسب شما وجود ندارد")
+                } else {
+                    let msg = ``
+
+                    const type_finder = (f) => {
+                        if (f.type === 1) {
+                            msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
+                        }
+                    }
+                    for (const f in files) {
+                        const { info, areas, city, address, images } = f
+                        const images_to_send = images.length ? images : ["https://static.vecteezy.com/system/resources/previews/022/059/000/non_2x/no-image-available-icon-vector.jpg"]
+                        type_finder(f)
+                        msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
+                        const media = images_to_send.map((e, index) => {
+                            return {
+                                type: "photo",
+                                media: e,
+                                caption: index === 0 ? msg : ""
+                            }
+                        })
+                        this.bot.sendMediaGroup(chatId, media)
+                    }
+                }
             }
 
 
