@@ -277,21 +277,18 @@ const bot_handler = {
                     }
                     for (const f of files) {
                         const { info, areas, city, address, images } = f
-                        const images_path=images.map(e=>e.replace("https://netfan.org:4949",`${__dirname}/../`))
+                        const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
                         console.log(images_path);
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
                         const media = images_path.map((e, index) => {
                             return {
                                 type: "photo",
-                                media: {
-                                    source:fs.createReadStream(e),
-                                    contentType: 'image/jpg'
-                                },
+                                media: fs.createReadStream(e),
                                 caption: index === 0 ? msg : ""
                             }
                         })
-                        this.bot.sendMediaGroup(chatId, media,{})
+                        this.bot.sendMediaGroup(chatId, media, {})
                     }
                 }
             }
