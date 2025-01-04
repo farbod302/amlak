@@ -463,7 +463,8 @@ const bot_handler = {
                 }
                 case ("my_homes"): {
                     const user = await User.findOne({ telegram_id: id })
-                    const homes = await Files.find({ user_id: user.id })
+                    console.log({user});
+                    const homes = await Files.find({ user_id: user.user_id })
                     let cnt = 1
                     for (const home of homes) {
                         const { city, address, home_type, active, pay, session_id } = home
