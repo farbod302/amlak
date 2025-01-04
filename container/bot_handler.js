@@ -501,7 +501,7 @@ const bot_handler = {
                             if (home_type === 3) return "رهن"
                         }
                         await this.bot.sendMessage(chatId,
-                            `${cnt}- ملک ثبت شده جهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}\n وضعیت: ${active ? "فعال" :"غیر فعال"} \n ${!pay ? "ملک ثبت نهایی نشده":""}`
+                            `${cnt}- ملک ثبت شده جهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}\n وضعیت: ${active ? "فعال" :"غیر فعال"} \n ${!pay ? "(ملک ثبت نهایی نشده)":""}`
                             ,
                             option
                         )
