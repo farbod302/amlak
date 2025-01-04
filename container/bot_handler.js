@@ -202,7 +202,7 @@ const bot_handler = {
                 const { user_id } = file
                 const user = await User.findOne({ user_id })
                 const { name, phone } = user
-                this.bot.sendMessage(chatId, `آگهی توسط ${name} ثبت شدخ است\nشماره تماس جهت هماهنگی: ${phone}\n ${!vip ? "مبلغ 10,000 تومان از حساب شما کسر شد" : ""}`)
+                this.bot.sendMessage(chatId, `آگهی توسط ${name} ثبت شده است\nشماره تماس جهت هماهنگی: ${phone}\n ${!vip ? "مبلغ 10,000 تومان از حساب شما کسر شد" : ""}`)
                 if (!vip) {
                     await User.findOneAndUpdate({ user_requested: id }, { $inc: { balance: 10000 } })
                 }
@@ -223,6 +223,24 @@ const bot_handler = {
                 }
                 await Files.findOneAndUpdate({ session_id: file_id }, { $set: { active: false } })
                 this.bot.sendMessage(chatId, "فایل از دسترس خارج شد")
+                return
+
+            }
+            if (data.startsWith("#active")) {
+                const file_id = data.replace("#active_", "")
+                const file = await Files.findOne({ session_id: file_id })
+                if (!file) {
+                    this.bot.sendMessage(chatId, "درخواست نا معتبر")
+                    return
+                }
+                const { user_id } = file
+                const user = await User.findOne({ telegram_id: id })
+                if (user.user_id !== user_id) {
+                    this.bot.sendMessage(chatId, "درخواست نا معتبر")
+                    return
+                }
+                await Files.findOneAndUpdate({ session_id: file_id }, { $set: { active: true } })
+                this.bot.sendMessage(chatId, "فایل در دسترس قرار گرفت")
                 return
 
             }
@@ -302,6 +320,12 @@ const bot_handler = {
                             if (f.type === 1) {
                                 msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
                             }
+                            if (f.type === 2) {
+                                msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
+                            }
+                            if (f.type === 3) {
+                                msg += `خانه جهت رهن به قیمت ${this.price_convert(f.price_mortgage)}\n`
+                            }
                         }
                         const { info, areas, city, address, images, session_id } = f
                         const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
@@ -328,6 +352,42 @@ const bot_handler = {
                         })
                     }
                 }
+                return
+            }
+
+            if (data.startsWith("#show_")) {
+                const file_id = data.replace("#show_", "")
+                const file = await File.findOne({ session_id: file_id })
+                let msg = ``
+                const type_finder = (f) => {
+                    if (f.type === 1) {
+                        msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
+                    }
+                    if (f.type === 2) {
+                        msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
+                    }
+                    if (f.type === 3) {
+                        msg += `خانه جهت رهن به قیمت ${this.price_convert(f.price_mortgage)}\n`
+                    }
+                }
+                const { info, areas, city, address, images } = file
+                const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
+                console.log(images_path);
+                type_finder(f)
+                msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
+                if (images.length) {
+                    const media = images_path.map((e, index) => {
+                        return {
+                            type: "photo",
+                            media: fs.createReadStream(e),
+                        }
+                    })
+                    await this.bot.sendMediaGroup(chatId, media)
+                } else {
+                    msg += "عکسی از این ملک موجود نیست"
+                }
+                await this.bot.sendMessage(chatId, msg)
+                return
             }
 
 
@@ -399,6 +459,52 @@ const bot_handler = {
                 case ("popup"): {
                     this.session_steps[id] = { cur_step: "popup" }
                     this.bot.sendMessage(chatId, "مبلغ افزایش اعتبار را به تومان وارد کنید:");
+                    break
+                }
+                case ("my_homes"): {
+                    const user = await User.findOne({ telegram_id: id })
+                    const homes = await Files.find({ user_id: user.id })
+                    let cnt = 1
+                    for (const home of homes) {
+                        const { city, address, home_type, active, pay, session_id } = home
+                        const option = {
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: "مشاهده مشخصات ملک", callback_data: `#search_${session_id}` }],
+
+                                ],
+                                remove_keyboard: true
+                            }
+                        }
+                        if (!pay) {
+                            option.reply_markup.inline_keyboard.push(
+                                [{ text: "ثبت نهایی ملک", callback_data: `#submit_${session_id}` }],
+
+                            )
+                        } else {
+                            if (active) {
+                                option.reply_markup.inline_keyboard.push(
+                                    [{ text: "غیر فعال کردن ملک", callback_data: `#deactive_${session_id}` }],
+
+                                )
+                            } else {
+                                option.reply_markup.inline_keyboard.push(
+                                    [{ text: " فعال کردن ملک", callback_data: `#active_${session_id}` }],
+                                )
+                            }
+                        }
+                        const type = (home_type) => {
+                            if (home_type === 1) return "فروش"
+                            if (home_type === 2) return "اجاره"
+                            if (home_type === 3) return "رهن"
+                        }
+                        await this.bot.sendMessage(chatId,
+                            `${cnt}- ملک ثبت شدهجهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}`
+                            ,
+                            option
+                        )
+                        cnt++
+                    }
                 }
             }
         })
