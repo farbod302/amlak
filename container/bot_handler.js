@@ -358,7 +358,7 @@ const bot_handler = {
 
             if (data.startsWith("#show_")) {
                 const file_id = data.replace("#show_", "")
-                const file = await File.findOne({ session_id: file_id })
+                const file = await Files.findOne({ session_id: file_id })
                 let msg = ``
                 const type_finder = (f) => {
                     if (f.type === 1) {
