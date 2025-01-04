@@ -374,7 +374,7 @@ const bot_handler = {
                 const { info, areas, city, address, images } = file
                 const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
                 console.log(images_path);
-                type_finder(f)
+                type_finder(file)
                 msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
                 if (images.length) {
                     const media = images_path.map((e, index) => {
