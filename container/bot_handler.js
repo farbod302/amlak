@@ -467,7 +467,7 @@ const bot_handler = {
                     const homes = await Files.find({ user_id: user.user_id })
                     let cnt = 1
                     for (const home of homes) {
-                        const { city, address, home_type, active, pay, session_id } = home
+                        const {areas, city, address, home_type, active, pay, session_id } = home
                         const option = {
                             reply_markup: {
                                 inline_keyboard: [
