@@ -471,7 +471,7 @@ const bot_handler = {
                         const option = {
                             reply_markup: {
                                 inline_keyboard: [
-                                    [{ text: "مشاهده مشخصات ملک", callback_data: `#search_${session_id}` }],
+                                    [{ text: "مشاهده مشخصات ملک", callback_data: `#show_${session_id}` }],
 
                                 ],
                                 remove_keyboard: true
@@ -500,7 +500,7 @@ const bot_handler = {
                             if (home_type === 3) return "رهن"
                         }
                         await this.bot.sendMessage(chatId,
-                            `${cnt}- ملک ثبت شدهجهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}`
+                            `${cnt}- ملک ثبت شده جهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}`
                             ,
                             option
                         )
