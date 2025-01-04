@@ -289,6 +289,7 @@ const bot_handler = {
             if (data.startsWith("#search_")) {
                 const search_id = data.replace("#search_", "")
                 const search = await Search.findOne({ session_id: search_id })
+                if(!search)return
                 const { areas, home_type, city, state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
                 const query = {
                     home_type,
