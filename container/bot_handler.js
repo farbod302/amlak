@@ -197,7 +197,7 @@ const bot_handler = {
                     })
                     return
                 }
-                const file_id = data.replace("#call", "")
+                const file_id = data.replace("#call_", "")
                 const file = await Files.findOne({ session_id: file_id })
                 const { user_id } = file
                 const user = await User.findOne({ user_id })
