@@ -183,6 +183,31 @@ const bot_handler = {
                 }
                 return
             }
+            if (data.startsWith("#call")) {
+                //check balance
+                const user_requested = await User.findOne({ telegram_id: id })
+                const { balance, vip } = user_requested
+                if (balance < 10000 && !vip) {
+                    this.bot.sendMessage(chatId, "موجودی حساب شما جهت نمایش شماره تماس کافی نیست", {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: 'شارژ حساب', callback_data: 'payment' }],
+                            ]
+                        }
+                    })
+                    return
+                }
+                const file_id = data.replace("#call", "")
+                const file = await Files.findOne({ session_id: file_id })
+                const { user_id } = file
+                const user = await User.findOne({ user_id })
+                const { name, phone } = user
+                this.bot.sendMessage(chatId, `آگهی توسط ${name} ثبت شدخ است\nشماره تماس جهت هماهنگی: ${phone}\n ${!vip ? "مبلغ 10,000 تومان از حساب شما کسر شد" : ""}`)
+                if (!vip) {
+                    await User.findOneAndUpdate({ user_requested: id }, { $inc: { balance: 10000 } })
+                }
+                return
+            }
             if (data.startsWith("#deactive")) {
                 const file_id = data.replace("#deactive_", "")
                 const file = await Files.findOne({ session_id: file_id })
@@ -269,7 +294,7 @@ const bot_handler = {
                     this.bot.sendMessage(chatId, "در حال حاضر فایلی مناسب شما وجود ندارد")
                 } else {
 
-                    let cnt=0
+                    let cnt = 0
                     for (const f of files) {
                         cnt++
                         let msg = `${cnt}- `
