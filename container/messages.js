@@ -19,7 +19,7 @@ const messages = {
                     [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                     [{ text: 'جست و جو ملک', callback_data: 'search' }],
                     [{ text: 'مالی', callback_data: 'payment' }],
-                    [{ text: 'آگهی های من', callback_data: 'my_homes' },{ text: 'جست و جو های اخیر من', callback_data: 'my_searches' }],
+                    [{ text: 'آگهی های من', callback_data: 'my_homes' },],
 
                 ],
                 remove_keyboard: true
@@ -32,7 +32,7 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ['1-اجاره', '2-خرید'],
+                    ['1-اجاره', '2-فروش'],
                     ['3-رهن']
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
@@ -46,7 +46,7 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ['1-اجاره', '2-خرید'],
+                    ['1-اجاره', '2-فروش'],
                     ['3-رهن']
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
@@ -73,8 +73,23 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ['Abhar 2', 'Abhar 1'],
-                    ["ثبت مناطق"],
+                    [...this.abhar_area],
+                    ["تایید مناطق انتخاب شده"],
+
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: false
+            }
+        }
+    },
+    "select_area_khoramdare": {
+        text: "مناطق مورد نظر را انتخاب کنید",
+        options: {
+            reply_markup: {
+
+                keyboard: [
+                    [...this.kh_areas],
+                    ["تایید مناطق انتخاب شده"],
 
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
@@ -88,7 +103,7 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ['Abhar 2', 'Abhar 1'],
+                    [...this.abhar_area],
 
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
@@ -102,7 +117,8 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ['kh1', 'kh2'],
+                    [...this.kh_areas],
+                    
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
                 one_time_keyboard: false
@@ -142,7 +158,7 @@ const messages = {
         }
     },
     "address": {
-        text: "آدرس دقیق ملک را وارد کنید",
+        text: "آدرس حدودی ملک را وارد کنید",
         options: {
             reply_markup: {
                 remove_keyboard: true
@@ -150,7 +166,7 @@ const messages = {
         }
     },
     "info": {
-        text: "توضیحات  لازم مانند متراژ ,تعداد واحد های ساختمان , برخورداری از آسانسور و .. برای این ملک را بنویسید",
+        text: "امکانات موجود در ملک را بنویسید (ویلایی ,واحد, متراژ ,امکانات رفاهی)",
         options: {
             reply_markup: {
                 remove_keyboard: true
@@ -186,6 +202,39 @@ const messages = {
             }
         }
     },
+    abhar_area: [
+        "شناط",
+        "پانزده خرداد",
+        "۱۷ شهریور",
+        "میدان جانبازان",
+        "میدان ورزش",
+        "فضیلت",
+        "خیابان امام خمینی",
+        "ولیعصر",
+        "گلشهر",
+        "میدان آزادی",
+        "میدان گلها",
+        "شهرک قائم",
+        "شهرک ستاره",
+        "شهرک گلستان",
+        "بسیجان",
+        "شهرداری",
+        "فرهنگیان",
+        "کارمندان",
+        "طالقانی جنوبی",
+        "طالقانی شمالی",
+        "باب الحوائج",
+        "نواب غربی",
+        "نواب شرقی",
+        "میدان معلم",
+        "میدان انقلاب",
+        "فیاض بخش",
+        "اطراف"
+    ],
+    kh_areas:[
+        "پایین جاده",
+        "بالای جاده"
+    ]
 
 }
 

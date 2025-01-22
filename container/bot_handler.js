@@ -29,11 +29,11 @@ const bot_handler = {
             new_search.pay = true
         }
         await new Search(new_search).save()
-        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "فروش" : "رهن"}\n
         شهر:${new_search.city}
         مناطق:${new_search.areas.join(", ")}
         بودجه:\n 
-        ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید " : ""}
+        ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه فروش " : ""}
         ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت " : ""}
         ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه " : ""}
         ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن " : ""}
@@ -68,16 +68,16 @@ const bot_handler = {
         new_search.price_mortgage = new_search.budget_mortgage || 0
         new_search.submitted_at = Date.now()
         new Home(new_search).save()
-        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "فروش" : "رهن"}\n
         شهر:${new_search.city}
-        منطقه:${new_search.are}
+        منطقه:${new_search.ares}
         ادرس:${new_search.address}
         عکس: ${new_search.images.length ? new_search.images.length + "عکس ثبت شد" : "عکسی ثبت نشده"}
         بودجه: 
-        ${new_search.price_buy ? new_search.price_buy + "تومان قیمت خرید " : ""}
-        ${new_search.price_advance ? new_search.price_advance + "تومان قیمت پیش پرداخت " : ""}
-        ${new_search.price_rent ? new_search.price_rent + "تومان قیمت اجاره ماهانه " : ""}
-        ${new_search.price_mortgage ? new_search.price_mortgage + "تومان قیمت رهن " : ""}
+        ${new_search.price_buy ? this.price_convert(new_search.price_buy) + "تومان قیمت فروش " : ""}
+        ${new_search.price_advance ? this.price_convert(new_search.price_advance) + "تومان قیمت پیش پرداخت " : ""}
+        ${new_search.price_rent ? this.price_convert(new_search.price_rent) + "تومان قیمت اجاره ماهانه " : ""}
+        ${new_search.price_mortgage ? this.price_convert(new_search.price_mortgage) + "تومان قیمت رهن " : ""}
         در صورت صحت اطلاعات روی دکمه "ثبت نهایی ملک" کلیک کنید تا فایل جدید ثبت شود
         در صورت ثبت نهایی مبلغ 10,000 از اعتبار شما کسر خواهد شد
         در صورت فعال بودن اشتراک VIP هزینه ای کسر نخواهد شد
@@ -113,7 +113,7 @@ const bot_handler = {
                         [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                         [{ text: 'جست و جو ملک', callback_data: 'search' }],
                         [{ text: 'مالی', callback_data: 'payment' }],
-                        [{ text: 'آگهی های من', callback_data: 'my_homes' }, { text: 'جست و جو های اخیر من', callback_data: 'my_searches' }],
+                        [{ text: 'آگهی های من', callback_data: 'my_homes' }],
                     ]
                 }
             };
@@ -186,8 +186,8 @@ const bot_handler = {
             if (data.startsWith("#call")) {
                 //check balance
                 const user_requested = await User.findOne({ telegram_id: id })
-                const { balance, vip } = user_requested
-                if (balance < 10000 && !vip) {
+                const { asset, vip } = user_requested
+                if (asset < 10000 && !vip) {
                     this.bot.sendMessage(chatId, "موجودی حساب شما جهت نمایش شماره تماس کافی نیست", {
                         reply_markup: {
                             inline_keyboard: [
@@ -204,7 +204,7 @@ const bot_handler = {
                 const { name, phone } = user
                 this.bot.sendMessage(chatId, `آگهی توسط ${name} ثبت شده است\nشماره تماس جهت هماهنگی: ${phone}\n ${!vip ? "مبلغ 10,000 تومان از حساب شما کسر شد" : ""}`)
                 if (!vip) {
-                    await User.findOneAndUpdate({ user_requested: id }, { $inc: { balance: 10000 } })
+                    await User.findOneAndUpdate({ user_requested: id }, { $inc: { asset: -10000 } })
                 }
                 return
             }
@@ -289,7 +289,7 @@ const bot_handler = {
             if (data.startsWith("#search_")) {
                 const search_id = data.replace("#search_", "")
                 const search = await Search.findOne({ session_id: search_id })
-                if(!search)return
+                if (!search) return
                 const { areas, home_type, city, state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
                 const query = {
                     home_type,
@@ -330,7 +330,6 @@ const bot_handler = {
                         }
                         const { info, areas, city, address, images, session_id } = f
                         const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
-                        console.log(images_path);
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}\n`
                         if (images.length) {
@@ -426,7 +425,7 @@ const bot_handler = {
                                 [{ text: 'ثبت آگهی', callback_data: 'submit_new_file' }],
                                 [{ text: 'جست و جو ملک', callback_data: 'search' }],
                                 [{ text: 'مالی', callback_data: 'payment' }],
-                                [{ text: 'آگهی های من', callback_data: 'my_homes' }, { text: 'جست و جو های اخیر من', callback_data: 'my_searches' }],
+                                [{ text: 'آگهی های من', callback_data: 'my_homes' }],
                             ],
                             remove_keyboard: true
                         }
@@ -464,11 +463,11 @@ const bot_handler = {
                 }
                 case ("my_homes"): {
                     const user = await User.findOne({ telegram_id: id })
-                    console.log({user});
+                    console.log({ user });
                     const homes = await Files.find({ user_id: user.user_id })
                     let cnt = 1
                     for (const home of homes) {
-                        const {areas, city, address, home_type, active, pay, session_id } = home
+                        const { areas, city, address, home_type, active, pay, session_id } = home
                         const option = {
                             reply_markup: {
                                 inline_keyboard: [
@@ -501,13 +500,15 @@ const bot_handler = {
                             if (home_type === 3) return "رهن"
                         }
                         await this.bot.sendMessage(chatId,
-                            `${cnt}- ملک ثبت شده جهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}\n وضعیت: ${active ? "فعال" :"غیر فعال"} \n ${!pay ? "(ملک ثبت نهایی نشده)":""}`
+                            `${cnt}- ملک ثبت شده جهت ${type(home_type)}\n واقع در منطقه ${areas} در شهر ${city}\n آدرس: ${address}\n وضعیت: ${active ? "فعال" : "غیر فعال"} \n ${!pay ? "(ملک ثبت نهایی نشده)" : ""}`
                             ,
                             option
                         )
                         cnt++
                     }
+                    break
                 }
+
             }
         })
         this.bot.on("message", async (msg) => {
@@ -521,7 +522,7 @@ const bot_handler = {
 
 
             switch (msg.text) {
-                case ("ثبت مناطق"): {
+                case ("تایید مناطق انتخاب شده"): {
                     const cur_session = sessions_handler.get_session(id)
                     const { areas } = cur_session
                     this.bot.sendMessage(chatId, `منطقه: ${areas.join(", ")}`)
