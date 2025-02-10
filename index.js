@@ -8,17 +8,17 @@ require("dotenv").config()
 const { CronJob } = require("cron")
 
 const Users = require("./db/users")
-// const https = require("https")
-// const conf = {
-//     key: fs.readFileSync("/etc/letsencrypt/live/netfan.org/privkey.pem"),
-//     cert: fs.readFileSync("/etc/letsencrypt/live/netfan.org/fullchain.pem")
-// }
-// const server = https.createServer(conf, app);
+const https = require("https")
+const conf = {
+    key: fs.readFileSync("/etc/letsencrypt/live/netfan.org/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/netfan.org/fullchain.pem")
+}
+const server = https.createServer(conf, app);
 
 const port = process.env.PORT
 
-// server.listen(port, () => { console.log("Server run on port " + port); })
-app.listen(port, () => { console.log("Server run on port " + port); })
+server.listen(port, () => { console.log("Server run on port " + port); })
+// app.listen(port, () => { console.log("Server run on port " + port); })
 
 app.use(bodyParser.json({ extend: true }))
 const mongo = require("mongoose")
