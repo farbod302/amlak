@@ -123,10 +123,9 @@ const messages = {
         `,
         options: {
             reply_markup: {
-
                 keyboard: [
-                    ["ناحیه 1"]
-                    ["ناحیه 2"]
+                    ["ناحیه 1"],
+                    ["ناحیه 2"],
                     ["ناحیه 3"]
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
