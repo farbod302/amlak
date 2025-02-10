@@ -574,6 +574,8 @@ const bot_handler = {
                 }
                 case ("city"): {
                     const city = msg.text
+                    sessions_handler.edit_session({ user_id: id, data: { city: city } })
+
                     this.session_steps[id] = { cur_step: "district" }
                     this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_abhar")
                     break
