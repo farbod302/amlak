@@ -567,7 +567,7 @@ const bot_handler = {
                     break
                 }
                 case ("home_type"): {
-                    const res = sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
+                     sessions_handler.edit_session({ user_id: id, data: { home_type: msg.text.split("-")[0] } })
                     this.send_message(chatId, "select_city")
                     this.session_steps[id] = { cur_step: "city" }
                     break
@@ -582,7 +582,7 @@ const bot_handler = {
                     const session = sessions_handler.edit_session({ user_id: id, data: { district: msg.text } })
                     if (session.session_type === "submit_new_file") {
                         this.session_steps[id] = { cur_step: "single_area" }
-                        this.send_message(chatId, session.city === "ابهر" ? "select_area_abhar_single" : "select_area_khoramdare_single")
+                        this.send_message(chatId, session.city === "ابهر" ? messages.get_areas(msg.text) : "select_area_khoramdare_single")
 
                     } else {
                         this.session_steps[id] = { cur_step: "area" }

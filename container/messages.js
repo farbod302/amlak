@@ -169,7 +169,20 @@ const messages = {
     },
 
     get_areas(dis) {
-        return abhar_area[dis]
+        return {
+            text: "منطقه ملک را انتخاب کنید",
+            options: {
+                reply_markup: {
+
+                    keyboard: [
+                        ...abhar_area[dis],
+
+                    ],
+                    resize_keyboard: true, // Adjust the keyboard size
+                    one_time_keyboard: false
+                }
+            }
+        }
     },
 
     "select_city": {
@@ -215,27 +228,14 @@ const messages = {
             }
         }
     },
-    "select_area_abhar_single": {
-        text: "منطقه ملک را انتخاب کنید",
-        options: {
-            reply_markup: {
 
-                keyboard: [
-                    ...abhar_area,
-
-                ],
-                resize_keyboard: true, // Adjust the keyboard size
-                one_time_keyboard: false
-            }
-        }
-    },
     "select_area_khoramdare_single": {
         text: "منطقه ملک را انتخاب کنید",
         options: {
             reply_markup: {
 
                 keyboard: [
-                    [...kh_areas],
+                    [...kh_areas_all],
 
                 ],
                 resize_keyboard: true, // Adjust the keyboard size
