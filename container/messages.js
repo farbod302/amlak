@@ -56,9 +56,43 @@ const abhar_area = {
     ],
 
 }
-const kh_areas = [
+const kh_areas_all = [
     "پایین جاده",
     "بالای جاده"
+]
+const abhar_areas_all = [
+    [
+        "شناط",
+        "پانزده خرداد",
+        "۱۷ شهریور"
+    ]
+    ,
+    [
+        "میدان جانبازان",
+        "میدان ورزش",
+        "فضیلت",
+    ],
+    [
+        "خیابان امام خمینی",
+        "ولیعصر"
+    ],
+    [
+        "گلشهر",
+        "میدان آزادی",
+        "میدان گل ها"
+    ]
+    ,
+    [
+        "شهرک قائم",
+        "شهرک ستاره",
+        "شهرک گلسار",
+    ],
+    [
+        "بسیجیان",
+        "شهرداری",
+        "فرهنگیان",
+    ]
+
 ]
 const messages = {
     "get_phone": {
@@ -134,6 +168,10 @@ const messages = {
         }
     },
 
+    get_areas(dis) {
+        return abhar_area[dis]
+    },
+
     "select_city": {
         text: "شهر را انتخاب کنید",
         options: {
@@ -153,7 +191,7 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    ...abhar_area,
+                    ...abhar_areas_all,
                     ["تایید مناطق انتخاب شده"],
 
                 ],
@@ -168,7 +206,7 @@ const messages = {
             reply_markup: {
 
                 keyboard: [
-                    [...kh_areas],
+                    [...kh_areas_all],
                     ["تایید مناطق انتخاب شده"],
 
                 ],

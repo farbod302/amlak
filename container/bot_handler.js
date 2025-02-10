@@ -574,15 +574,8 @@ const bot_handler = {
                 }
                 case ("city"): {
                     const city = msg.text
-                    const session = sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
-                    if (session.session_type === "submit_new_file") {
-                        this.session_steps[id] = { cur_step: "district" }
-                        this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_abhar")
-
-                    } else {
-                        this.session_steps[id] = { cur_step: "area" }
-                        this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
-                    }
+                    this.session_steps[id] = { cur_step: "district" }
+                    this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_abhar")
                     break
                 }
                 case ("district"): {
