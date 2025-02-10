@@ -70,7 +70,7 @@ const bot_handler = {
         new Home(new_search).save()
         const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "فروش" : "رهن"}\n
         شهر:${new_search.city}
-        منطقه:${new_search.ares}
+        منطقه:${new_search.areas}
         ادرس:${new_search.address}
         عکس: ${new_search.images.length ? new_search.images.length + "عکس ثبت شد" : "عکسی ثبت نشده"}
         بودجه: 
@@ -318,13 +318,13 @@ const bot_handler = {
                         cnt++
                         let msg = `${cnt}- `
                         const type_finder = (f) => {
-                            if (f.type === 1) {
+                            if (f.home_type === 2) {
                                 msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
                             }
-                            if (f.type === 2) {
+                            if (f.home_type === 1) {
                                 msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
                             }
-                            if (f.type === 3) {
+                            if (f.home_type === 3) {
                                 msg += `خانه جهت رهن به قیمت ${this.price_convert(f.price_mortgage)}\n`
                             }
                         }
@@ -360,19 +360,18 @@ const bot_handler = {
                 const file = await Files.findOne({ session_id: file_id })
                 let msg = ``
                 const type_finder = (f) => {
-                    if (f.type === 1) {
+                    if (f.home_type === 2) {
                         msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
                     }
-                    if (f.type === 2) {
+                    if (f.home_type === 1) {
                         msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
                     }
-                    if (f.type === 3) {
+                    if (f.home_type === 3) {
                         msg += `خانه جهت رهن به قیمت ${this.price_convert(f.price_mortgage)}\n`
                     }
                 }
                 const { info, areas, city, address, images } = file
                 const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
-                console.log(images_path);
                 type_finder(file)
                 msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
                 if (images.length) {
@@ -577,14 +576,24 @@ const bot_handler = {
                     const city = msg.text
                     const session = sessions_handler.edit_session({ user_id: id, data: { city: msg.text } })
                     if (session.session_type === "submit_new_file") {
-                        this.session_steps[id] = { cur_step: "single_area" }
-                        this.send_message(chatId, city === "ابهر" ? "select_area_abhar_single" : "select_area_khoramdare_single")
+                        this.session_steps[id] = { cur_step: "district" }
+                        this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_abhar")
 
                     } else {
                         this.session_steps[id] = { cur_step: "area" }
                         this.send_message(chatId, city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
+                    }
+                    break
+                }
+                case ("district"): {
+                    const session = sessions_handler.edit_session({ user_id: id, data: { district: msg.text } })
+                    if (session.session_type === "submit_new_file") {
+                        this.session_steps[id] = { cur_step: "single_area" }
+                        this.send_message(chatId, session.city === "ابهر" ? "select_area_abhar_single" : "select_area_khoramdare_single")
 
-
+                    } else {
+                        this.session_steps[id] = { cur_step: "area" }
+                        this.send_message(chatId, session.city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
                     }
                     break
                 }
@@ -680,7 +689,7 @@ const bot_handler = {
                         if (cur_session.areas.includes(msg.text)) return this.bot.sendMessage(chatId, `منطقه قبلا انتخاب شده`)
                         sessions_handler.edit_session({ user_id: id, data: { areas: [...cur_session.areas, msg.text] } })
                     }
-                    this.bot.sendMessage(chatId, `اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را انتخاب کنید`)
+                    this.bot.sendMessage(chatId, `اگر مناطق دیگر مد نظر شما است انتخاب کنید و یا ثبت منطقه را در انتهای لیست انتخاب کنید`)
 
                     break
                 }
@@ -706,7 +715,7 @@ const bot_handler = {
                     }
                     if (home_type == 2) {
                         this.session_steps[id] = { cur_step: "budget_buy" }
-                        this.send_message(id, "budget_buy")
+                        this.send_message(id, "budget_sell")
                     }
                     if (home_type == 3) {
                         this.session_steps[id] = { cur_step: "budget_mortgage" }
