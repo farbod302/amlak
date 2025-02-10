@@ -580,6 +580,7 @@ const bot_handler = {
                 }
                 case ("district"): {
                     const session = sessions_handler.edit_session({ user_id: id, data: { district: msg.text } })
+                    console.log({session});
                     if (session.session_type === "submit_new_file") {
                         this.session_steps[id] = { cur_step: "single_area" }
                         this.send_message(chatId, session.city === "ابهر" ? messages.get_areas(msg.text) : "select_area_khoramdare_single")
