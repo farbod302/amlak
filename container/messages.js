@@ -167,6 +167,19 @@ const messages = {
             }
         }
     },
+    "select_d_kh": {
+        text: `ناحیه ملک را بنا به جدول زیر مشخص کنید\n ناحیه 1:بالای جاده\nناحیه 2 :پایین جاده`,
+        options: {
+            reply_markup: {
+                keyboard: [
+                    ["ناحیه 1"],
+                    ["ناحیه 2"],
+                ],
+                resize_keyboard: true, // Adjust the keyboard size
+                one_time_keyboard: true
+            }
+        }
+    },
 
     get_areas(dis) {
         return {

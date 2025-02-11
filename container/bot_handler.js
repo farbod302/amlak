@@ -290,11 +290,11 @@ const bot_handler = {
                 const search_id = data.replace("#search_", "")
                 const search = await Search.findOne({ session_id: search_id })
                 if (!search) return
-                const { areas, home_type, city, state, budget_buy, budget_advance, budget_rent, budget_mortgage } = search
+                const { home_type, city, state, budget_buy, budget_advance, budget_rent, budget_mortgage, district } = search
                 const query = {
                     home_type,
                     city,
-                    areas: { $in: areas },
+                    district: district,
                     active: true,
                     state
                 }
@@ -329,7 +329,7 @@ const bot_handler = {
                             }
                         }
                         const { info, areas, city, address, images, session_id } = f
-                        const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
+                        const images_path = images.map(e => e.replace("https://amlak.devdailychallenge.com", `${__dirname}/../`))
                         type_finder(f)
                         msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}\n`
                         if (images.length) {
@@ -371,7 +371,7 @@ const bot_handler = {
                     }
                 }
                 const { info, areas, city, address, images } = file
-                const images_path = images.map(e => e.replace("https://netfan.org:4949", `${__dirname}/../`))
+                const images_path = images.map(e => e.replace("https://amlak.devdailychallenge.com", `${__dirname}/../`))
                 type_finder(file)
                 msg += `واقع در شهر ${city}\nآدرس: ${address}\nمنطقه: ${areas}\nتوضیحات: ${info}`
                 if (images.length) {
@@ -575,9 +575,8 @@ const bot_handler = {
                 case ("city"): {
                     const city = msg.text
                     sessions_handler.edit_session({ user_id: id, data: { city: city } })
-
                     this.session_steps[id] = { cur_step: "district" }
-                    this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_abhar")
+                    this.send_message(chatId, city === "ابهر" ? "select_d_abhar" : "select_d_kh")
                     break
                 }
                 case ("district"): {
@@ -734,7 +733,7 @@ const bot_handler = {
 
                     await this.bot.downloadFile(last.file_id, "./images/" + session_id)
                     const folder = fs.readdirSync("./images/" + session_id)
-                    const links = folder.map(e => `https://netfan.org:4949/images/${session_id}/${e}`)
+                    const links = folder.map(e => `https://amlak.devdailychallenge.com/images/${session_id}/${e}`)
                     sessions_handler.edit_session({ user_id: id, data: { images: links } })
                     if (this.session_steps[id]?.cur_step !== "info") {
                         this.session_steps[id] = { cur_step: "info" }
