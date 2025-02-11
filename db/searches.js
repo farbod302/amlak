@@ -11,6 +11,8 @@ const searches = mongoose.Schema({
     areas: Array,
     date: Number,
     home_type:Number,
+    district: String,
+
     budget_buy: { type: Number, default: 0 },
     budget_advance: { type: Number, default: 0 },
     budget_rent: { type: Number, default: 0 },
