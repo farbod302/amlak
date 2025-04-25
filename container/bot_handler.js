@@ -29,11 +29,11 @@ const bot_handler = {
             new_search.pay = true
         }
         await new Search(new_search).save()
-        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "فروش" : "رهن"}\n
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
         مناطق:${new_search.areas.join(", ")}
         بودجه:\n 
-        ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه فروش " : ""}
+        ${new_search.budget_buy ? new_search.budget_buy + "تومان بودجه خرید " : ""}
         ${new_search.budget_advance ? new_search.budget_advance + "تومان بودجه پیش پرداخت " : ""}
         ${new_search.budget_rent ? new_search.budget_rent + "تومان بودجه اجاره ماهانه " : ""}
         ${new_search.budget_mortgage ? new_search.budget_mortgage + "تومان بودجه رهن " : ""}
@@ -68,13 +68,13 @@ const bot_handler = {
         new_search.price_mortgage = new_search.budget_mortgage || 0
         new_search.submitted_at = Date.now()
         new Home(new_search).save()
-        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "فروش" : "رهن"}\n
+        const message = `درخواست شما ثبت شد\nملک جهت: ${new_search.home_type == 1 ? "اجاره" : new_search.home_type == 2 ? "خرید" : "رهن"}\n
         شهر:${new_search.city}
         منطقه:${new_search.areas}
         ادرس:${new_search.address}
         عکس: ${new_search.images.length ? new_search.images.length + "عکس ثبت شد" : "عکسی ثبت نشده"}
         بودجه: 
-        ${new_search.price_buy ? this.price_convert(new_search.price_buy) + "تومان قیمت فروش " : ""}
+        ${new_search.price_buy ? this.price_convert(new_search.price_buy) + "تومان قیمت خرید " : ""}
         ${new_search.price_advance ? this.price_convert(new_search.price_advance) + "تومان قیمت پیش پرداخت " : ""}
         ${new_search.price_rent ? this.price_convert(new_search.price_rent) + "تومان قیمت اجاره ماهانه " : ""}
         ${new_search.price_mortgage ? this.price_convert(new_search.price_mortgage) + "تومان قیمت رهن " : ""}
@@ -247,7 +247,7 @@ const bot_handler = {
             if (data == "VIP") {
                 const user = await User.findOne({ telegram_id: id })
                 const { asset, vip, vip_until } = user
-                if (asset < 100000) {
+                if (asset < 198000) {
                     this.bot.sendMessage(chatId, "موجودی حساب شما برای  فعال سازی VIP کافی نیست")
                     return
                 }
@@ -269,14 +269,14 @@ const bot_handler = {
             if (data === "confirm_vip") {
                 const user = await User.findOne({ telegram_id: id })
                 const { asset, vip_until } = user
-                if (asset < 100000) {
+                if (asset < 198000) {
                     this.bot.sendMessage(chatId, "موجودی حساب شما برای  فعال سازی VIP کافی نیست")
                     return
                 }
                 const cur_date = Math.max(Date.now(), vip_until)
                 const oneMonth = 1000 * 60 * 60 * 24 * 30
                 const new_date = cur_date + oneMonth
-                await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -100000 }, $set: { vip: true, vip_until: new_date } })
+                await User.findOneAndUpdate({ telegram_id: id }, { $inc: { asset: -198000 }, $set: { vip: true, vip_until: new_date } })
                 this.bot.sendMessage(chatId, "تمدید / خرید اشتراک با موفقیت انجام شد", {
                     reply_markup: {
                         inline_keyboard: [
@@ -299,14 +299,14 @@ const bot_handler = {
                     state
                 }
                 if (home_type === 1) {
-                    query.price_advance = { $lte: budget_advance }
-                    query.price_rent = { $lte: budget_rent }
+                    query.price_advance = { $lte: budget_advance + 1000000 }
+                    query.price_rent = { $lte: budget_rent + 500000 }
                 }
                 if (home_type === 2) {
-                    query.price_buy = { $lte: budget_buy }
+                    query.price_buy = { $lte: budget_buy + 10000000 }
                 }
                 if (home_type === 3) {
-                    query.price_mortgage = { $lte: budget_mortgage }
+                    query.price_mortgage = { $lte: budget_mortgage + 5000000 }
                 }
                 const files = await Files.find(query).sort({ submitted_at: -1 }).limit(7)
                 if (!files.length) {
@@ -319,7 +319,7 @@ const bot_handler = {
                         let msg = `${cnt}- `
                         const type_finder = (f) => {
                             if (f.home_type === 2) {
-                                msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
+                                msg += `خانه جهت خرید به قیمت ${this.price_convert(f.price_buy)}\n`
                             }
                             if (f.home_type === 1) {
                                 msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
@@ -361,7 +361,7 @@ const bot_handler = {
                 let msg = ``
                 const type_finder = (f) => {
                     if (f.home_type === 2) {
-                        msg += `خانه جهت فروش به قیمت ${this.price_convert(f.price_buy)}\n`
+                        msg += `خانه جهت خرید به قیمت ${this.price_convert(f.price_buy)}\n`
                     }
                     if (f.home_type === 1) {
                         msg += `خانه جهت اجاره به قیمت ${this.price_convert(f.price_advance)} تومان پول پیش و ${this.price_convert(f.price_rent)} تومان اجاره بها\n`
@@ -441,7 +441,7 @@ const bot_handler = {
                         const day = Math.round(def / (1000 * 60 * 60 * 24))
                         day_remain = day
                     }
-                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 100,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
+                    const msg = `موجودی حساب شما: ${asset} تومان\n اشتراک vip: ${vip ? "فعال" : "غیر فعال"}\n${vip ? "اعتبار اشتراک vip تا" + day_remain + "روز آینده" : ""}\nبا تهیه اشتراک vip می توانید بدون پرداخت هزینه اضافه به تعداد نامحدود آگهی ثبت کنید و یا ملک جستجو کنید\nهزینه اشتراک vip برای یک ماه: 198,000 تومان\nهزینه ثبت هر آگهی یا جست و جو ملک: 10,000 تومان`
                     const options = {
                         reply_markup: {
                             inline_keyboard: [
@@ -462,7 +462,6 @@ const bot_handler = {
                 }
                 case ("my_homes"): {
                     const user = await User.findOne({ telegram_id: id })
-                    console.log({ user });
                     const homes = await Files.find({ user_id: user.user_id })
                     let cnt = 1
                     for (const home of homes) {
@@ -494,8 +493,8 @@ const bot_handler = {
                             }
                         }
                         const type = (home_type) => {
-                            if (home_type === 1) return "فروش"
-                            if (home_type === 2) return "اجاره"
+                            if (home_type === 1) return "اجاره"
+                            if (home_type === 2) return "خرید"
                             if (home_type === 3) return "رهن"
                         }
                         await this.bot.sendMessage(chatId,
@@ -515,7 +514,7 @@ const bot_handler = {
             const chatId = msg.chat.id
 
             const session = this.session_steps[id]
-            if (!session && !msg.text.startsWith("set")) {
+            if (!session && !msg.text.startsWith("set") && !msg.text.startsWith("data")) {
                 return
             }
 
@@ -524,6 +523,7 @@ const bot_handler = {
                 case ("تایید مناطق انتخاب شده"): {
                     const cur_session = sessions_handler.get_session(id)
                     const { areas } = cur_session
+                    if (!areas) return this.send_message(id, "ایتدا مناطق را انتخاب کنید")
                     this.bot.sendMessage(chatId, `منطقه: ${areas.join(", ")}`)
                     const { home_type } = cur_session
                     if (home_type == 1) {
@@ -538,6 +538,32 @@ const bot_handler = {
                         this.session_steps[id] = { cur_step: "budget_mortgage" }
                         this.send_message(id, "budget_mortgage")
                     }
+                    return
+                }
+                case ("data_12345"): {
+                    const payment = await Invoice.find({ status: 1 })
+                    const files = await Files.find({ active: true })
+                    const searches = await Search.find({ pay: true })
+                    const total_pay = payment.reduce((a, b) => a + b.amount,0)
+                    const files_list = {
+                        rent: 0,
+                        sell: 0,
+                        mort: 0
+                    }
+                    files.forEach(h => {
+                        const { home_type } = h
+                        switch (home_type) {
+                            case (1):return files_list.rent += 1
+                            case (2):return files_list.sell += 1
+                            case (3):return files_list.mort += 1
+                        }
+                    })
+                    const price_convert = (p) => {
+                        const { format } = Intl.NumberFormat()
+                        return format(p) + " "
+                    }
+                    const message = `آمار برنامه:\nمبلغ پرداخت های تایید شده: ${price_convert(total_pay)} تومان \nجست و جو های انجام شده: ${searches.length} جست و جو \n فایل ها: \n فایل جهت اجاری: ${files_list.rent}\nفایل جهت فروش: ${files_list.sell}\n فایل جهت رهن: ${files_list.mort}`
+                    this.bot.sendMessage(id, message)
                     return
                 }
                 case ("set_admin_12345"): {
@@ -593,7 +619,12 @@ const bot_handler = {
 
                     } else {
                         this.session_steps[id] = { cur_step: "area" }
-                        this.send_message(chatId, session.city === "ابهر" ? "select_area_abhar" : "select_area_khoramdare")
+                        if (session.city === "ابهر") {
+                            const config = messages.get_areas_search(msg.text)
+                            this.bot.sendMessage(chatId, config.text, config.options)
+                        } else {
+                            this.send_message(chatId, "select_area_khoramdare_single")
+                        }
                     }
                     break
                 }
@@ -604,7 +635,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    sessions_handler.edit_session({ user_id: id, data: { budget_advance: +msg.text } })
+                    sessions_handler.edit_session({ user_id: id, data: { budget_advance: +msg.text.replaceAll(",", "") } })
                     this.session_steps[id] = { cur_step: "budget_rent" }
                     this.send_message(id, "budget_rent")
                     break
@@ -619,12 +650,12 @@ const bot_handler = {
                     const invoice_id = uid(6)
                     const new_invoice = {
                         telegram_id: id,
-                        amount: +(price.trim()),
+                        amount: +(price.replaceAll(",", "").trim()),
                         date: Date.now(),
                         status: 0,
                         invoice_id
                     }
-                    const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>1111-2222-3333-4444</code> \n واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @melakshoma ارسال کنید`;
+                    const message = `درخواست شما ثبت شد \nشناسه پرداخت: <code>${invoice_id}</code> \nمبلغ: ${price} تومان \nوجه را به شماره کارت: \n<code>6063731243346765</code> \n واریز کنید و رسید پرداخت را همراه با شناسه پرداخت به حساب @melakshoma  \n  ارسال کنید \n شماره کارت به اسم سارا موسی پور`;
                     this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
                     new Invoice(new_invoice).save()
                     const json_str = fs.readFileSync(__dirname + "/../config.json")
@@ -651,7 +682,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_rent: +msg.text.replaceAll(",", "") } })
                     this.session_steps[id] = null
                     session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
@@ -663,7 +694,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_buy: +msg.text.replaceAll(",", "") } })
                     this.session_steps[id] = null
                     session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break
@@ -675,7 +706,7 @@ const bot_handler = {
                         this.send_message(chatId, "invalid_price")
                         return
                     }
-                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text } })
+                    const { session_type } = sessions_handler.edit_session({ user_id: id, data: { budget_mortgage: +msg.text.replaceAll(",", "") } })
                     this.session_steps[id] = null
                     session_type === "search" ? this.submit_search(id) : this.submit_file(id)
                     break

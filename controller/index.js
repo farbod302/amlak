@@ -5,9 +5,9 @@ const controllers = {
         }
         return true
     },
-    price(num){
-        if(typeof +num === "number")return true
-        return false
+    price(num) {
+        if(!num)return false
+        return /^-?\d+$/.test(num.replaceAll(",", ""));
     }
 }
 
