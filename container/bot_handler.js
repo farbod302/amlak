@@ -308,7 +308,10 @@ const bot_handler = {
                 if (home_type === 3) {
                     query.price_mortgage = { $lte: budget_mortgage + 5000000 }
                 }
-                const files = await Files.find(query).sort({ submitted_at: -1 }).limit(7)
+                let files = await Files.find(query).limit(20)
+
+                const sort_type = home_type == 1 ? "price_advance" : home_type === 2 ? "price_buy" : "price_mortgage"
+                files = files.sort((a, b) => b[sort_type] - a[sort_type])
                 if (!files.length) {
                     this.bot.sendMessage(chatId, "در حال حاضر فایلی مناسب شما وجود ندارد")
                 } else {
@@ -544,7 +547,7 @@ const bot_handler = {
                     const payment = await Invoice.find({ status: 1 })
                     const files = await Files.find({ active: true })
                     const searches = await Search.find({ pay: true })
-                    const total_pay = payment.reduce((a, b) => a + b.amount,0)
+                    const total_pay = payment.reduce((a, b) => a + b.amount, 0)
                     const files_list = {
                         rent: 0,
                         sell: 0,
@@ -553,9 +556,9 @@ const bot_handler = {
                     files.forEach(h => {
                         const { home_type } = h
                         switch (home_type) {
-                            case (1):return files_list.rent += 1
-                            case (2):return files_list.sell += 1
-                            case (3):return files_list.mort += 1
+                            case (1): return files_list.rent += 1
+                            case (2): return files_list.sell += 1
+                            case (3): return files_list.mort += 1
                         }
                     })
                     const price_convert = (p) => {
