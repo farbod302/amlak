@@ -303,12 +303,12 @@ const bot_handler = {
                     query.price_rent = { $lte: budget_rent + 500000 }
                 }
                 if (home_type === 2) {
-                    query.price_buy = { $lte: budget_buy + 10000000 }
+                    query.price_buy = { $lte: budget_buy + 300000000 }
                 }
                 if (home_type === 3) {
-                    query.price_mortgage = { $lte: budget_mortgage + 5000000 }
+                    query.price_mortgage = { $lte: budget_mortgage + 50000000 }
                 }
-                let files = await Files.find(query).limit(20)
+                let files = await Files.find(query).limit(8)
 
                 const sort_type = home_type == 1 ? "price_advance" : home_type === 2 ? "price_buy" : "price_mortgage"
                 files = files.sort((a, b) => b[sort_type] - a[sort_type])
